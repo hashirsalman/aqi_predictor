@@ -25,7 +25,20 @@ Important rules:
 
 ## Current Status
 
-Phase 4 is the current implementation baseline. The repository has been bootstrapped, includes Open-Meteo ingestion/backfill, generates reproducible EDA outputs, and now builds canonical features plus exact Day +1, Day +2, and Day +3 US AQI targets.
+The project now includes the core data, feature, training, registry, automation, explainability, and FastAPI inference pieces.
+
+Implemented so far:
+
+- Open-Meteo Karachi historical/live ingestion
+- data validation and EDA outputs
+- canonical feature engineering and Day +1/Day +2/Day +3 target generation
+- Hopsworks historical Feature Group and live Feature Group
+- model training with persistence, Ridge, Random Forest, Gradient Boosting, and neural MLP candidates
+- Hopsworks Model Registry packaging/registration
+- SHAP feature-importance reports
+- GitHub Actions hourly feature ingestion and daily training workflows
+- FastAPI inference backend with AQI health alerts
+- Streamlit dashboard that calls FastAPI
 
 For the detailed engineering handoff, read [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md).
 
@@ -90,6 +103,110 @@ python scripts/upload_feature_store.py
 
 Use Python 3.11 for Hopsworks work. The local `.env` must contain `HOPSWORKS_PROJECT`, `HOPSWORKS_API_KEY`, and the correct non-secret `HOPSWORKS_HOST` for the user’s actual Hopsworks project/instance. Copy only the host name from Hopsworks, without `https://` and without any path. Do not use `c.app.hopsworks.ai`; that value was tested on 2026-08-30 and did not resolve from this environment.
 
+To run the live hourly feature pipeline locally:
+
+```powershell
+$env:PYTHONPATH = "src"
+python scripts/run_feature_pipeline.py
+```
+
+To train models locally from Hopsworks Feature Store:
+
+```powershell
+$env:PYTHONPATH = "src"
+python scripts/train.py
+```
+
+To register selected models in Hopsworks Model Registry:
+
+```powershell
+$env:PYTHONPATH = "src"
+python scripts/register_models.py
+```
+
+To run the read-only FastAPI inference smoke test:
+
+```powershell
+$env:PYTHONPATH = "src"
+python scripts/smoke_test_api.py
+```
+
+This writes `reports/metrics/api_smoke_test_report.json`.
+
+To start the FastAPI backend locally:
+
+```powershell
+$env:PYTHONPATH = "src"
+python scripts/run_api.py
+```
+
+Then open:
+
+```text
+http://127.0.0.1:8000/health
+http://127.0.0.1:8000/predict
+http://127.0.0.1:8000/docs
+```
+
+The `/predict` endpoint reads the latest live feature row from Hopsworks Feature Store, loads the latest registered Day +1, Day +2, and Day +3 models from Hopsworks Model Registry, and returns predictions with model versions, RMSE values, current AQI, data timestamp, and AQI health-alert categories.
+
+To start the Streamlit dashboard locally, first keep the FastAPI backend running in one terminal, then open a second terminal and run:
+
+```powershell
+$env:PYTHONPATH = "src;."
+python scripts/run_dashboard.py
+```
+
+The dashboard calls the FastAPI `/predict` endpoint using `FASTAPI_BASE_URL` from `.env`. If `FASTAPI_BASE_URL` is blank, it defaults to:
+
+```text
+http://127.0.0.1:8000
+```
+
+The dashboard shows current observed US AQI, source-observation freshness, Day +1/Day +2/Day +3 predicted US AQI, AQI category/alert messages, model registry names/versions, and RMSE metrics for the currently loaded registry models.
+
+## Deployment Preparation
+
+Deployment has been prepared but not executed.
+
+Prepared files:
+
+- `deployment/fastapi/render.yaml`
+- `deployment/fastapi/README.md`
+- `deployment/streamlit/README.md`
+- `.streamlit/config.toml`
+
+Recommended free-path candidate:
+
+```text
+FastAPI backend: Render Free Web Service
+Streamlit dashboard: Streamlit Community Cloud
+```
+
+Manual deployment checkpoint:
+
+- Do not deploy until the repository owner signs into the selected provider.
+- Do not choose a paid plan.
+- Do not add billing unless explicitly approved.
+- Store Hopsworks credentials and `FASTAPI_BASE_URL` only as provider secrets/environment variables.
+- Never commit `.env` or deployment secrets.
+
+FastAPI deployment needs these environment variables:
+
+```text
+PYTHONPATH=src
+HOPSWORKS_API_KEY=<provider secret>
+HOPSWORKS_PROJECT=<provider secret>
+HOPSWORKS_HOST=eu-west.cloud.hopsworks.ai
+HOPSWORKS_CERT_FOLDER=.hopsworks-certs
+```
+
+Streamlit deployment needs this secret after FastAPI is deployed:
+
+```toml
+FASTAPI_BASE_URL = "https://<your-fastapi-service-url>"
+```
+
 ## Detailed Report
 
-The final project report will live at `reports/FINAL_REPORT.md`. It has not been written yet because data collection, EDA, modeling, automation, and deployment have not started.
+The final project report will live at `reports/FINAL_REPORT.md`. It has not been written yet because deployment and final submission audit are still pending.

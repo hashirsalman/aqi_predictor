@@ -29,7 +29,10 @@ from aqi_predictor.feature_store.feature_group import (
     prepare_feature_group_frame,
     validate_feature_store_readback,
 )
-from aqi_predictor.feature_store.hopsworks_client import load_hopsworks_settings
+from aqi_predictor.feature_store.hopsworks_client import (
+    _clear_known_blackhole_proxy,
+    load_hopsworks_settings,
+)
 from aqi_predictor.features.engineering import build_features
 from aqi_predictor.features.target_generation import add_aqi_targets
 
@@ -85,6 +88,20 @@ class FeatureStoreIntegrationTest(unittest.TestCase):
 
         self.assertEqual(settings.host, "eu-west.cloud.hopsworks.ai")
         self.assertEqual(settings.cert_folder, ROOT / ".hopsworks-certs")
+
+    def test_clear_known_blackhole_proxy_only_removes_blocked_proxy(self) -> None:
+        with patch.dict(
+            os.environ,
+            {
+                "HTTPS_PROXY": "http://127.0.0.1:9",
+                "HTTP_PROXY": "http://proxy.example:8080",
+            },
+            clear=True,
+        ):
+            _clear_known_blackhole_proxy()
+
+            self.assertNotIn("HTTPS_PROXY", os.environ)
+            self.assertEqual(os.environ["HTTP_PROXY"], "http://proxy.example:8080")
 
     def test_feature_group_metadata_uses_locked_name_keys_and_event_time(self) -> None:
         feature_store = FakeFeatureStore()

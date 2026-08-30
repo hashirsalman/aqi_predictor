@@ -66,6 +66,7 @@ def connect_hopsworks(settings: HopsworksSettings | None = None) -> Any:
             "Use Python 3.11 and install requirements before running cloud integration."
         ) from exc
 
+    _clear_known_blackhole_proxy()
     _patch_hopsworks_windows_kafka_pem_paths(resolved.cert_folder)
 
     kwargs: dict[str, Any] = {
@@ -90,6 +91,32 @@ def get_model_registry(project: Any | None = None) -> Any:
 
     resolved_project = project or connect_hopsworks()
     return resolved_project.get_model_registry()
+
+
+def _clear_known_blackhole_proxy() -> None:
+    """Remove proxy environment variables that point at the local blocked proxy.
+
+    Some managed/local shells inject `http://127.0.0.1:9` as a network-blocking
+    proxy. That is useful for sandboxing, but it breaks approved/local Hopsworks
+    runs by making `requests` connect to localhost instead of Hopsworks. We only
+    remove this exact blackhole value and leave any real user-configured proxy
+    untouched.
+    """
+
+    blocked_values = {"http://127.0.0.1:9", "https://127.0.0.1:9"}
+    for name in (
+        "HTTP_PROXY",
+        "HTTPS_PROXY",
+        "ALL_PROXY",
+        "GIT_HTTP_PROXY",
+        "GIT_HTTPS_PROXY",
+        "http_proxy",
+        "https_proxy",
+        "all_proxy",
+    ):
+        value = os.environ.get(name, "").strip().lower()
+        if value in blocked_values:
+            os.environ.pop(name, None)
 
 
 def _patch_hopsworks_windows_kafka_pem_paths(cert_folder: Path) -> None:

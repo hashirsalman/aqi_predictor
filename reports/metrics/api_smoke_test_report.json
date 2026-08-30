@@ -1,0 +1,87 @@
+{
+  "city": "Karachi",
+  "aqi_standard": "US AQI",
+  "generated_at_utc": "2026-08-30T19:17:37.100376+00:00",
+  "source_observation": {
+    "event_time_utc": "2026-08-29T18:00:00+00:00",
+    "event_time_local": "2026-08-29T23:00:00+05:00",
+    "current_aqi": 64.0,
+    "feature_schema_version": 1,
+    "alert": {
+      "category": "Moderate",
+      "color": "yellow",
+      "alert_level": "notice",
+      "is_health_alert": false,
+      "message": "Unusually sensitive people should consider reducing prolonged outdoor exertion."
+    }
+  },
+  "predictions": [
+    {
+      "horizon": "day1",
+      "predicted_aqi": 62.75838436870323,
+      "rounded_aqi": 63,
+      "alert": {
+        "category": "Moderate",
+        "color": "yellow",
+        "alert_level": "notice",
+        "is_health_alert": false,
+        "message": "Unusually sensitive people should consider reducing prolonged outdoor exertion."
+      },
+      "model": {
+        "registry_name": "karachi_aqi_day1",
+        "registry_version": 1,
+        "model_family": "ridge",
+        "validation_rmse": 6.488425090196801,
+        "test_rmse": null,
+        "validation_mae": 4.969794563771039,
+        "validation_r2": 0.8451438234449585,
+        "beats_persistence_validation": 1.0
+      }
+    },
+    {
+      "horizon": "day2",
+      "predicted_aqi": 71.71903522178606,
+      "rounded_aqi": 72,
+      "alert": {
+        "category": "Moderate",
+        "color": "yellow",
+        "alert_level": "notice",
+        "is_health_alert": false,
+        "message": "Unusually sensitive people should consider reducing prolonged outdoor exertion."
+      },
+      "model": {
+        "registry_name": "karachi_aqi_day2",
+        "registry_version": 1,
+        "model_family": "gradient_boosting",
+        "validation_rmse": 15.169428845717414,
+        "test_rmse": null,
+        "validation_mae": 11.58379240565437,
+        "validation_r2": 0.16557363340852882,
+        "beats_persistence_validation": 1.0
+      }
+    },
+    {
+      "horizon": "day3",
+      "predicted_aqi": 80.28729224668876,
+      "rounded_aqi": 80,
+      "alert": {
+        "category": "Moderate",
+        "color": "yellow",
+        "alert_level": "notice",
+        "is_health_alert": false,
+        "message": "Unusually sensitive people should consider reducing prolonged outdoor exertion."
+      },
+      "model": {
+        "registry_name": "karachi_aqi_day3",
+        "registry_version": 1,
+        "model_family": "gradient_boosting",
+        "validation_rmse": 17.10386457373609,
+        "test_rmse": null,
+        "validation_mae": 13.210255442573532,
+        "validation_r2": -0.06457041657470608,
+        "beats_persistence_validation": 1.0
+      }
+    }
+  ],
+  "input_policy": "Observed/current and historical features only. No future weather, pollutant, or AQI forecasts."
+}
