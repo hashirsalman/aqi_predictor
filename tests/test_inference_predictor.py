@@ -3,7 +3,7 @@ from dataclasses import dataclass
 import pandas as pd
 
 from aqi_predictor.features.feature_contract import CANONICAL_FEATURE_COLUMNS
-from aqi_predictor.inference.live_features import latest_live_features_from_frame
+from aqi_predictor.inference.live_features import latest_live_features_from_frame, load_latest_live_features
 from aqi_predictor.inference.model_loader import LoadedRegistryModel
 from aqi_predictor.inference.predictor import _predict_one_horizon
 
@@ -44,6 +44,30 @@ def test_latest_live_features_selects_newest_row_and_feature_contract():
     assert list(latest.features.columns) == list(CANONICAL_FEATURE_COLUMNS)
     assert latest.event_time_utc == "2026-08-29T18:00:00+00:00"
     assert latest.event_time_local == "2026-08-29T23:00:00+05:00"
+
+
+def test_load_latest_live_features_forces_pandas_read_path():
+    class FakeFeatureGroup:
+        def __init__(self):
+            self.read_kwargs = None
+
+        def read(self, **kwargs):
+            self.read_kwargs = kwargs
+            return _live_frame()
+
+    class FakeFeatureStore:
+        def __init__(self):
+            self.feature_group = FakeFeatureGroup()
+
+        def get_or_create_feature_group(self, **kwargs):
+            return self.feature_group
+
+    feature_store = FakeFeatureStore()
+
+    latest = load_latest_live_features(feature_store)
+
+    assert latest.current_aqi == 82.0
+    assert feature_store.feature_group.read_kwargs == {"dataframe_type": "pandas"}
 
 
 def test_predict_one_horizon_returns_model_version_rmse_and_alert():

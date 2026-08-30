@@ -29,7 +29,7 @@ def load_latest_live_features(feature_store: Any | None = None) -> LatestFeature
 
     fs = feature_store or get_feature_store()
     feature_group = get_or_create_live_feature_group(fs)
-    frame = feature_group.read()
+    frame = feature_group.read(dataframe_type="pandas")
     return latest_live_features_from_frame(frame)
 
 
