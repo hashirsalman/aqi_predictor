@@ -52,6 +52,42 @@ def model_metric_table(payload: dict[str, Any]) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def condition_table(payload: dict[str, Any], group: str) -> pd.DataFrame:
+    """Convert current pollutant/weather context into display rows."""
+
+    conditions = payload.get("current_conditions", {}).get(group, {})
+    rows = []
+    for key, item in conditions.items():
+        value = item.get("value")
+        if value is None:
+            continue
+        rows.append(
+            {
+                "Metric": item.get("label", key),
+                "Value": round(float(value), 2),
+                "Unit": item.get("unit", ""),
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def forecast_summary(payload: dict[str, Any]) -> dict[str, float | int | None]:
+    """Return simple summary statistics for the visible forecast section."""
+
+    values = [
+        float(prediction["rounded_aqi"])
+        for prediction in payload.get("predictions", [])
+        if prediction.get("rounded_aqi") is not None
+    ]
+    if not values:
+        return {"average": None, "maximum": None, "minimum": None}
+    return {
+        "average": round(sum(values) / len(values), 1),
+        "maximum": int(max(values)),
+        "minimum": int(min(values)),
+    }
+
+
 def observation_age_hours(payload: dict[str, Any], now: datetime | None = None) -> float | None:
     """Calculate source-observation age in hours from the API payload."""
 
@@ -77,4 +113,3 @@ def strongest_alert(payload: dict[str, Any]) -> dict[str, Any] | None:
     if not alerts:
         return None
     return max(alerts, key=lambda alert: severity.get(str(alert.get("alert_level")), -1))
-

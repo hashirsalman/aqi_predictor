@@ -25,7 +25,7 @@ Important rules:
 
 ## Current Status
 
-The project now includes the core data, feature, training, registry, automation, explainability, and FastAPI inference pieces.
+The project now includes the core data, feature, training, registry, automation, explainability, FastAPI inference, and Streamlit dashboard pieces.
 
 Implemented so far:
 
@@ -40,9 +40,12 @@ Implemented so far:
 - FastAPI inference backend with AQI health alerts
 - Streamlit dashboard that calls FastAPI
 
-For the detailed engineering handoff, read [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md).
+Live deployment URLs:
 
-For the authoritative Codex implementation contract, read [README_CODEX_MASTER_AQI_REVISED_2026-08-29.md](README_CODEX_MASTER_AQI_REVISED_2026-08-29.md).
+- FastAPI backend: `https://pearls-aqi-fastapi.onrender.com`
+- Streamlit dashboard: `https://aqipredictor-x3knr3fztvobzbemejnf3l.streamlit.app/`
+
+Internal planning/handoff files such as `IMPLEMENTATION_STATUS.md` and `README_CODEX_MASTER_AQI_REVISED_2026-08-29.md` are kept locally and intentionally excluded from the public repository.
 
 ## Local Checks
 
@@ -163,11 +166,11 @@ The dashboard calls the FastAPI `/predict` endpoint using `FASTAPI_BASE_URL` fro
 http://127.0.0.1:8000
 ```
 
-The dashboard shows current observed US AQI, source-observation freshness, Day +1/Day +2/Day +3 predicted US AQI, AQI category/alert messages, model registry names/versions, and RMSE metrics for the currently loaded registry models.
+The dashboard shows current observed US AQI, pollutant/weather context, source-observation freshness, Day +1/Day +2/Day +3 predicted US AQI, AQI category/alert messages, a forecast chart, and health guidance. Model registry names/versions, validation metrics, backend URL, and the raw API response are available inside the collapsed "Technical details for evaluators" section.
 
 ## Deployment Preparation
 
-Deployment has been prepared but not executed.
+Deployment has been prepared and manually executed by the repository owner on free-tier services.
 
 Prepared files:
 

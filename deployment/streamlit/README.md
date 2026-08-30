@@ -36,8 +36,11 @@ After deployment, verify the dashboard shows:
 
 - current observed US AQI;
 - latest source observation timestamp;
+- current pollutant context;
+- weather context;
 - Day +1, Day +2, and Day +3 forecast AQI;
 - AQI categories and alerts;
-- Hopsworks model registry names/versions;
-- validation/test RMSE metrics where available.
+- health guidance for the strongest current/forecast AQI alert;
+- Hopsworks model registry names/versions and validation/test RMSE metrics inside the collapsed technical evaluator section.
 
+The main page should be user-facing. Keep backend URL, raw API response, and registry internals inside the technical details expander rather than showing them as primary dashboard content.

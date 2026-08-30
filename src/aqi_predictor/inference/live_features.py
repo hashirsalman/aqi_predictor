@@ -9,7 +9,7 @@ import pandas as pd
 
 from aqi_predictor.feature_store.feature_group import get_or_create_live_feature_group
 from aqi_predictor.feature_store.hopsworks_client import get_feature_store
-from aqi_predictor.features.feature_contract import CANONICAL_FEATURE_COLUMNS
+from aqi_predictor.features.feature_contract import BASE_OBSERVED_FEATURES, CANONICAL_FEATURE_COLUMNS
 
 
 @dataclass(frozen=True)
@@ -22,6 +22,7 @@ class LatestFeatureRow:
     event_time_local: str
     current_aqi: float
     feature_schema_version: int | None
+    observed_values: dict[str, float | None]
 
 
 def load_latest_live_features(feature_store: Any | None = None) -> LatestFeatureRow:
@@ -64,6 +65,10 @@ def latest_live_features_from_frame(frame: pd.DataFrame) -> LatestFeatureRow:
         raise ValueError(f"Latest live feature row has missing model inputs: {missing_features}")
 
     features = pd.DataFrame([feature_values.to_dict()], columns=list(CANONICAL_FEATURE_COLUMNS))
+    observed_values = {
+        column: float(latest[column]) if column in latest.index and pd.notna(latest[column]) else None
+        for column in BASE_OBSERVED_FEATURES
+    }
     return LatestFeatureRow(
         features=features,
         city=str(latest["city"]),
@@ -73,4 +78,5 @@ def latest_live_features_from_frame(frame: pd.DataFrame) -> LatestFeatureRow:
         feature_schema_version=int(latest["feature_schema_version"])
         if pd.notna(latest["feature_schema_version"])
         else None,
+        observed_values=observed_values,
     )

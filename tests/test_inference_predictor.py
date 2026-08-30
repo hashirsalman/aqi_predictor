@@ -5,7 +5,7 @@ import pandas as pd
 from aqi_predictor.features.feature_contract import CANONICAL_FEATURE_COLUMNS
 from aqi_predictor.inference.live_features import latest_live_features_from_frame, load_latest_live_features
 from aqi_predictor.inference.model_loader import LoadedRegistryModel
-from aqi_predictor.inference.predictor import _predict_one_horizon
+from aqi_predictor.inference.predictor import _current_conditions, _predict_one_horizon
 
 
 @dataclass
@@ -44,6 +44,8 @@ def test_latest_live_features_selects_newest_row_and_feature_contract():
     assert list(latest.features.columns) == list(CANONICAL_FEATURE_COLUMNS)
     assert latest.event_time_utc == "2026-08-29T18:00:00+00:00"
     assert latest.event_time_local == "2026-08-29T23:00:00+05:00"
+    assert latest.observed_values["pm2_5"] == 1.0
+    assert latest.observed_values["temperature_2m"] == 1.0
 
 
 def test_load_latest_live_features_forces_pandas_read_path():
@@ -88,3 +90,12 @@ def test_predict_one_horizon_returns_model_version_rmse_and_alert():
     assert prediction["alert"]["category"] == "Unhealthy"
     assert prediction["model"]["registry_version"] == 3
     assert prediction["model"]["validation_rmse"] == 6.5
+
+
+def test_current_conditions_exposes_pollutant_and_weather_context():
+    latest = latest_live_features_from_frame(_live_frame())
+
+    conditions = _current_conditions(latest)
+
+    assert conditions["pollutants"]["pm2_5"] == {"label": "PM2.5", "value": 1.0, "unit": "ug/m3"}
+    assert conditions["weather"]["temperature_2m"] == {"label": "Temperature", "value": 1.0, "unit": "C"}

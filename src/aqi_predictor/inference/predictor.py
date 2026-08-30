@@ -41,6 +41,7 @@ class PredictionService:
                 "feature_schema_version": latest_features.feature_schema_version,
                 "alert": current_alert,
             },
+            "current_conditions": _current_conditions(latest_features),
             "predictions": predictions,
             "input_policy": "Observed/current and historical features only. No future weather, pollutant, or AQI forecasts.",
         }
@@ -92,3 +93,26 @@ def _predict_one_horizon(
         },
     }
 
+
+def _current_conditions(latest_features: LatestFeatureRow) -> dict[str, Any]:
+    """Build user-facing latest pollutant and weather context."""
+
+    observed = latest_features.observed_values
+    return {
+        "pollutants": {
+            "pm2_5": {"label": "PM2.5", "value": observed.get("pm2_5"), "unit": "ug/m3"},
+            "pm10": {"label": "PM10", "value": observed.get("pm10"), "unit": "ug/m3"},
+            "nitrogen_dioxide": {"label": "NO2", "value": observed.get("nitrogen_dioxide"), "unit": "ug/m3"},
+            "carbon_monoxide": {"label": "CO", "value": observed.get("carbon_monoxide"), "unit": "ug/m3"},
+            "ozone": {"label": "O3", "value": observed.get("ozone"), "unit": "ug/m3"},
+            "sulphur_dioxide": {"label": "SO2", "value": observed.get("sulphur_dioxide"), "unit": "ug/m3"},
+        },
+        "weather": {
+            "temperature_2m": {"label": "Temperature", "value": observed.get("temperature_2m"), "unit": "C"},
+            "relative_humidity_2m": {"label": "Humidity", "value": observed.get("relative_humidity_2m"), "unit": "%"},
+            "wind_speed_10m": {"label": "Wind speed", "value": observed.get("wind_speed_10m"), "unit": "km/h"},
+            "surface_pressure": {"label": "Pressure", "value": observed.get("surface_pressure"), "unit": "hPa"},
+            "cloud_cover": {"label": "Cloud cover", "value": observed.get("cloud_cover"), "unit": "%"},
+            "precipitation": {"label": "Precipitation", "value": observed.get("precipitation"), "unit": "mm"},
+        },
+    }

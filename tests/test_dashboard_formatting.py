@@ -11,6 +11,15 @@ def _payload():
             "current_aqi": 64,
             "alert": {"category": "Moderate", "alert_level": "notice", "is_health_alert": False},
         },
+        "current_conditions": {
+            "pollutants": {
+                "pm2_5": {"label": "PM2.5", "value": 10.123, "unit": "ug/m3"},
+                "pm10": {"label": "PM10", "value": None, "unit": "ug/m3"},
+            },
+            "weather": {
+                "temperature_2m": {"label": "Temperature", "value": 29.9, "unit": "C"},
+            },
+        },
         "predictions": [
             {
                 "horizon": "day1",
@@ -82,3 +91,18 @@ def test_strongest_alert_finds_unhealthy_prediction():
     assert alert["category"] == "Unhealthy"
     assert alert["is_health_alert"] is True
 
+
+def test_condition_table_skips_missing_values():
+    from dashboard.formatting import condition_table
+
+    table = condition_table(_payload(), "pollutants")
+
+    assert table.to_dict("records") == [{"Metric": "PM2.5", "Value": 10.12, "Unit": "ug/m3"}]
+
+
+def test_forecast_summary_uses_rounded_predictions():
+    from dashboard.formatting import forecast_summary
+
+    summary = forecast_summary(_payload())
+
+    assert summary == {"average": 109.0, "maximum": 155, "minimum": 63}
