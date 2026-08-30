@@ -1,0 +1,31 @@
+model,horizon,target,split,rmse,mae,r2,beats_persistence_validation,notes
+persistence,day1,target_aqi_day1,validation,13.504321377609845,10.2948816872428,0.32919626543270497,False,Baseline: predicts future daily-average AQI as latest known 24h rolling AQI average.
+persistence,day1,target_aqi_day1,test,7.579789181495914,5.412680041152263,0.4721088965444806,False,Baseline: predicts future daily-average AQI as latest known 24h rolling AQI average.
+ridge,day1,target_aqi_day1,validation,6.488425090196801,4.969794563771039,0.8451438234449585,True,Linear statistical baseline with feature scaling.
+ridge,day1,target_aqi_day1,test,3.6147020147646236,2.624325379229692,0.879946426453954,False,Linear statistical baseline with feature scaling.
+random_forest,day1,target_aqi_day1,validation,7.360138990877263,5.453432893342008,0.8007391522465793,True,Tree ensemble candidate.
+random_forest,day1,target_aqi_day1,test,3.9142814706589966,2.896518099589079,0.8592221936732316,False,Tree ensemble candidate.
+gradient_boosting,day1,target_aqi_day1,validation,6.760764248227388,5.00309513365178,0.8318714271968967,True,Boosting candidate using scikit-learn gradient boosting.
+gradient_boosting,day1,target_aqi_day1,test,3.5609863635273933,2.58279475633465,0.8834879856486249,False,Boosting candidate using scikit-learn gradient boosting.
+neural_mlp,day1,target_aqi_day1,validation,9.925190686789586,7.4007037189436,0.6376505045709346,True,Small CPU-friendly neural-network/MLP candidate; TensorFlow/PyTorch can be added later as heavier optional experiment.
+neural_mlp,day1,target_aqi_day1,test,5.628310857527603,4.064420932045031,0.7089375092280354,False,Small CPU-friendly neural-network/MLP candidate; TensorFlow/PyTorch can be added later as heavier optional experiment.
+persistence,day2,target_aqi_day2,validation,17.313169028599095,13.390174897119342,-0.08693280985446772,False,Baseline: predicts future daily-average AQI as latest known 24h rolling AQI average.
+persistence,day2,target_aqi_day2,test,11.863641201750486,8.422743055555555,-0.3806357192829788,False,Baseline: predicts future daily-average AQI as latest known 24h rolling AQI average.
+ridge,day2,target_aqi_day2,validation,15.19416791850863,11.902572810929808,0.16284976455311662,True,Linear statistical baseline with feature scaling.
+ridge,day2,target_aqi_day2,test,8.781200615156159,6.416136453877214,0.24360108684511983,False,Linear statistical baseline with feature scaling.
+random_forest,day2,target_aqi_day2,validation,16.11562162798117,12.261726521034836,0.05823253102610282,True,Tree ensemble candidate.
+random_forest,day2,target_aqi_day2,test,9.068534372699549,6.690454426990224,0.19329025214247786,False,Tree ensemble candidate.
+gradient_boosting,day2,target_aqi_day2,validation,15.169428845717414,11.58379240565437,0.16557363340852882,True,Boosting candidate using scikit-learn gradient boosting.
+gradient_boosting,day2,target_aqi_day2,test,8.116860283319344,5.91736533104722,0.353722198748309,False,Boosting candidate using scikit-learn gradient boosting.
+neural_mlp,day2,target_aqi_day2,validation,20.653481778925865,15.881794351886477,-0.5468069401949449,False,Small CPU-friendly neural-network/MLP candidate; TensorFlow/PyTorch can be added later as heavier optional experiment.
+neural_mlp,day2,target_aqi_day2,test,11.32622570464457,8.061644016039338,-0.2583849671647722,False,Small CPU-friendly neural-network/MLP candidate; TensorFlow/PyTorch can be added later as heavier optional experiment.
+persistence,day3,target_aqi_day3,validation,18.710120913938464,14.254565329218108,-0.27391098698699823,False,Baseline: predicts future daily-average AQI as latest known 24h rolling AQI average.
+persistence,day3,target_aqi_day3,test,14.079427231254607,9.856658307613168,-0.9585461443153029,False,Baseline: predicts future daily-average AQI as latest known 24h rolling AQI average.
+ridge,day3,target_aqi_day3,validation,17.142284110662256,13.543652471870265,-0.06935836825465258,True,Linear statistical baseline with feature scaling.
+ridge,day3,target_aqi_day3,test,10.882602817535787,7.761406618039964,-0.1701172752317639,False,Linear statistical baseline with feature scaling.
+random_forest,day3,target_aqi_day3,validation,18.38499796052542,14.008416901549229,-0.23002253190086308,True,Tree ensemble candidate.
+random_forest,day3,target_aqi_day3,test,12.245012836026564,9.410761458065537,-0.4814340504164474,False,Tree ensemble candidate.
+gradient_boosting,day3,target_aqi_day3,validation,17.10386457373609,13.210255442573532,-0.06457041657470608,True,Boosting candidate using scikit-learn gradient boosting.
+gradient_boosting,day3,target_aqi_day3,test,10.10543188033025,7.353458822331633,-0.008959167950251201,False,Boosting candidate using scikit-learn gradient boosting.
+neural_mlp,day3,target_aqi_day3,validation,23.832277333596622,18.62536437896198,-1.0668881870674944,False,Small CPU-friendly neural-network/MLP candidate; TensorFlow/PyTorch can be added later as heavier optional experiment.
+neural_mlp,day3,target_aqi_day3,test,12.694469240262405,9.710983826415616,-0.5921828012275467,False,Small CPU-friendly neural-network/MLP candidate; TensorFlow/PyTorch can be added later as heavier optional experiment.

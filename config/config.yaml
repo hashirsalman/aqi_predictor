@@ -1,0 +1,68 @@
+project:
+  name: "pearls-aqi-predictor"
+  city: "Karachi"
+  country: "Pakistan"
+  latitude: 24.8607
+  longitude: 67.0011
+  timezone: "Asia/Karachi"
+  aqi_standard: "us_aqi"
+
+data:
+  source: "open_meteo"
+  historical_years: 2
+  frequency: "1h"
+  forecast_input_allowed: false
+  open_meteo:
+    weather_archive_url: "https://archive-api.open-meteo.com/v1/archive"
+    weather_recent_url: "https://api.open-meteo.com/v1/forecast"
+    air_quality_url: "https://air-quality-api.open-meteo.com/v1/air-quality"
+    request_timeout_seconds: 30
+    max_retries: 3
+    retry_backoff_seconds: 2
+    weather_hourly:
+      - temperature_2m
+      - relative_humidity_2m
+      - precipitation
+      - rain
+      - surface_pressure
+      - cloud_cover
+      - wind_speed_10m
+      - wind_direction_10m
+      - wind_gusts_10m
+    air_quality_hourly:
+      - pm10
+      - pm2_5
+      - carbon_monoxide
+      - nitrogen_dioxide
+      - sulphur_dioxide
+      - ozone
+      - us_aqi
+
+targets:
+  day1:
+    start_hour: 1
+    end_hour: 24
+  day2:
+    start_hour: 25
+    end_hour: 48
+  day3:
+    start_hour: 49
+    end_hour: 72
+
+automation:
+  feature_pipeline_cron: "hourly"
+  training_pipeline_cron: "daily"
+
+modeling:
+  random_seed: 42
+  primary_metric: "rmse"
+  metrics:
+    - rmse
+    - mae
+    - r2
+
+feature_store:
+  provider: "hopsworks"
+
+model_registry:
+  provider: "hopsworks"

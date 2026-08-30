@@ -1,0 +1,181 @@
+{
+  "feature_schema_version": 1,
+  "input_rows": 17520,
+  "engineered_rows": 17520,
+  "supervised_rows_after_history_and_target_drop": 17280,
+  "dropped_initial_rows_for_lags_rolls": 168,
+  "dropped_final_rows_for_targets": 72,
+  "feature_count": 115,
+  "target_columns": [
+    "target_aqi_day1",
+    "target_aqi_day2",
+    "target_aqi_day3"
+  ],
+  "first_supervised_event_time_utc": "2024-08-30T19:00:00+00:00",
+  "last_supervised_event_time_utc": "2026-08-20T18:00:00+00:00",
+  "leakage_policy": "Canonical features contain no target/future/forecast columns; lags use positive shifts and rolling windows are backward-looking.",
+  "feature_eligibility_table": [
+    {
+      "feature": "temperature_2m",
+      "historical_available": true,
+      "live_current_available": true,
+      "same_units_semantics": true,
+      "missingness_percent": 0.0,
+      "missingness_acceptable": true,
+      "keep": true,
+      "reason": "Kept: available consistently with acceptable missingness."
+    },
+    {
+      "feature": "relative_humidity_2m",
+      "historical_available": true,
+      "live_current_available": true,
+      "same_units_semantics": true,
+      "missingness_percent": 0.0,
+      "missingness_acceptable": true,
+      "keep": true,
+      "reason": "Kept: available consistently with acceptable missingness."
+    },
+    {
+      "feature": "precipitation",
+      "historical_available": true,
+      "live_current_available": true,
+      "same_units_semantics": true,
+      "missingness_percent": 0.0,
+      "missingness_acceptable": true,
+      "keep": true,
+      "reason": "Kept: available consistently with acceptable missingness."
+    },
+    {
+      "feature": "rain",
+      "historical_available": true,
+      "live_current_available": true,
+      "same_units_semantics": true,
+      "missingness_percent": 0.0,
+      "missingness_acceptable": true,
+      "keep": true,
+      "reason": "Kept: available consistently with acceptable missingness."
+    },
+    {
+      "feature": "surface_pressure",
+      "historical_available": true,
+      "live_current_available": true,
+      "same_units_semantics": true,
+      "missingness_percent": 0.0,
+      "missingness_acceptable": true,
+      "keep": true,
+      "reason": "Kept: available consistently with acceptable missingness."
+    },
+    {
+      "feature": "cloud_cover",
+      "historical_available": true,
+      "live_current_available": true,
+      "same_units_semantics": true,
+      "missingness_percent": 0.0,
+      "missingness_acceptable": true,
+      "keep": true,
+      "reason": "Kept: available consistently with acceptable missingness."
+    },
+    {
+      "feature": "wind_speed_10m",
+      "historical_available": true,
+      "live_current_available": true,
+      "same_units_semantics": true,
+      "missingness_percent": 0.0,
+      "missingness_acceptable": true,
+      "keep": true,
+      "reason": "Kept: available consistently with acceptable missingness."
+    },
+    {
+      "feature": "wind_direction_10m",
+      "historical_available": true,
+      "live_current_available": true,
+      "same_units_semantics": true,
+      "missingness_percent": 0.0,
+      "missingness_acceptable": true,
+      "keep": true,
+      "reason": "Kept: available consistently with acceptable missingness."
+    },
+    {
+      "feature": "wind_gusts_10m",
+      "historical_available": true,
+      "live_current_available": true,
+      "same_units_semantics": true,
+      "missingness_percent": 0.0,
+      "missingness_acceptable": true,
+      "keep": true,
+      "reason": "Kept: available consistently with acceptable missingness."
+    },
+    {
+      "feature": "pm10",
+      "historical_available": true,
+      "live_current_available": true,
+      "same_units_semantics": true,
+      "missingness_percent": 0.0,
+      "missingness_acceptable": true,
+      "keep": true,
+      "reason": "Kept: available consistently with acceptable missingness."
+    },
+    {
+      "feature": "pm2_5",
+      "historical_available": true,
+      "live_current_available": true,
+      "same_units_semantics": true,
+      "missingness_percent": 0.0,
+      "missingness_acceptable": true,
+      "keep": true,
+      "reason": "Kept: available consistently with acceptable missingness."
+    },
+    {
+      "feature": "carbon_monoxide",
+      "historical_available": true,
+      "live_current_available": true,
+      "same_units_semantics": true,
+      "missingness_percent": 0.0,
+      "missingness_acceptable": true,
+      "keep": true,
+      "reason": "Kept: available consistently with acceptable missingness."
+    },
+    {
+      "feature": "nitrogen_dioxide",
+      "historical_available": true,
+      "live_current_available": true,
+      "same_units_semantics": true,
+      "missingness_percent": 0.0,
+      "missingness_acceptable": true,
+      "keep": true,
+      "reason": "Kept: available consistently with acceptable missingness."
+    },
+    {
+      "feature": "sulphur_dioxide",
+      "historical_available": true,
+      "live_current_available": true,
+      "same_units_semantics": true,
+      "missingness_percent": 0.0,
+      "missingness_acceptable": true,
+      "keep": true,
+      "reason": "Kept: available consistently with acceptable missingness."
+    },
+    {
+      "feature": "ozone",
+      "historical_available": true,
+      "live_current_available": true,
+      "same_units_semantics": true,
+      "missingness_percent": 0.0,
+      "missingness_acceptable": true,
+      "keep": true,
+      "reason": "Kept: available consistently with acceptable missingness."
+    },
+    {
+      "feature": "us_aqi",
+      "historical_available": true,
+      "live_current_available": true,
+      "same_units_semantics": true,
+      "missingness_percent": 0.0,
+      "missingness_acceptable": true,
+      "keep": true,
+      "reason": "Kept: available consistently with acceptable missingness."
+    }
+  ],
+  "local_artifact": "data\\processed\\karachi_features_targets.csv",
+  "local_artifact_role": "development/staging only; not the production Feature Store"
+}

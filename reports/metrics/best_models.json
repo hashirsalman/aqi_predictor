@@ -1,0 +1,35 @@
+[
+  {
+    "horizon": "day1",
+    "model": "ridge",
+    "target": "target_aqi_day1",
+    "split": "validation",
+    "rmse": 6.488425090196801,
+    "mae": 4.969794563771039,
+    "r2": 0.8451438234449585,
+    "beats_persistence_validation": true,
+    "notes": "Linear statistical baseline with feature scaling."
+  },
+  {
+    "horizon": "day2",
+    "model": "gradient_boosting",
+    "target": "target_aqi_day2",
+    "split": "validation",
+    "rmse": 15.169428845717414,
+    "mae": 11.58379240565437,
+    "r2": 0.16557363340852882,
+    "beats_persistence_validation": true,
+    "notes": "Boosting candidate using scikit-learn gradient boosting."
+  },
+  {
+    "horizon": "day3",
+    "model": "gradient_boosting",
+    "target": "target_aqi_day3",
+    "split": "validation",
+    "rmse": 17.10386457373609,
+    "mae": 13.210255442573532,
+    "r2": -0.06457041657470608,
+    "beats_persistence_validation": true,
+    "notes": "Boosting candidate using scikit-learn gradient boosting."
+  }
+]

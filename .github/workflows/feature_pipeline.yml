@@ -1,0 +1,67 @@
+name: Hourly Feature Pipeline
+
+on:
+  schedule:
+    # Runs once per hour. Minute 17 avoids the top-of-hour traffic spike.
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hourly-feature-pipeline
+  cancel-in-progress: false
+
+jobs:
+  ingest-live-features:
+    name: Fetch latest Karachi observations and upsert live features
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    env:
+      PYTHONPATH: src
+      HOPSWORKS_API_KEY: ${{ secrets.HOPSWORKS_API_KEY }}
+      HOPSWORKS_PROJECT: ${{ secrets.HOPSWORKS_PROJECT }}
+      HOPSWORKS_HOST: ${{ secrets.HOPSWORKS_HOST }}
+      HOPSWORKS_CERT_FOLDER: .hopsworks-certs
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install project dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      - name: Verify required GitHub Secrets are configured
+        run: |
+          missing=0
+          for name in HOPSWORKS_API_KEY HOPSWORKS_PROJECT HOPSWORKS_HOST; do
+            if [ -z "${!name}" ]; then
+              echo "::error title=Missing GitHub Secret::$name is not configured for this repository."
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            exit 1
+          fi
+
+      - name: Run hourly live feature pipeline
+        run: python scripts/run_feature_pipeline.py
+
+      - name: Upload feature pipeline report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-feature-pipeline-report
+          path: reports/metrics/live_feature_pipeline_report.json
+          if-no-files-found: warn
+

@@ -1,0 +1,170 @@
+{
+  "rows": 17520,
+  "start_local": "2024-08-24T00:00:00+05:00",
+  "end_local": "2026-08-23T23:00:00+05:00",
+  "aqi_distribution": {
+    "min": 41.0,
+    "p25": 73.0,
+    "median": 82.0,
+    "p75": 98.0,
+    "max": 173.0,
+    "mean": 88.0521,
+    "std": 21.9235
+  },
+  "hourly_aqi_mean": {
+    "0": 87.1164,
+    "1": 87.1151,
+    "2": 87.1151,
+    "3": 87.1192,
+    "4": 87.1178,
+    "5": 87.111,
+    "6": 87.0973,
+    "7": 87.0918,
+    "8": 87.0945,
+    "9": 87.0658,
+    "10": 87.0438,
+    "11": 87.0466,
+    "12": 87.0548,
+    "13": 87.1205,
+    "14": 87.1795,
+    "15": 87.4356,
+    "16": 88.3164,
+    "17": 90.5123,
+    "18": 93.0027,
+    "19": 93.2466,
+    "20": 90.9712,
+    "21": 88.6274,
+    "22": 87.4575,
+    "23": 87.1918
+  },
+  "weekly_aqi_mean": {
+    "0": 88.0104,
+    "1": 89.1046,
+    "2": 88.5357,
+    "3": 87.4046,
+    "4": 87.2484,
+    "5": 87.5028,
+    "6": 88.5587
+  },
+  "monthly_aqi_mean": {
+    "1": 108.7668,
+    "2": 94.4598,
+    "3": 81.1707,
+    "4": 80.8819,
+    "5": 80.3461,
+    "6": 80.6264,
+    "7": 81.7661,
+    "8": 75.6976,
+    "9": 73.4986,
+    "10": 87.7332,
+    "11": 102.9076,
+    "12": 108.9294
+  },
+  "high_aqi_events": {
+    "unhealthy_for_sensitive_groups_or_worse": {
+      "hour_count": 3920,
+      "day_count": 280
+    },
+    "unhealthy_or_worse": {
+      "hour_count": 385,
+      "day_count": 39
+    },
+    "very_unhealthy_or_worse": {
+      "hour_count": 0,
+      "day_count": 0
+    },
+    "hazardous": {
+      "hour_count": 0,
+      "day_count": 0
+    }
+  },
+  "missing_percent": {
+    "temperature_2m": 0.0,
+    "relative_humidity_2m": 0.0,
+    "precipitation": 0.0,
+    "rain": 0.0,
+    "surface_pressure": 0.0,
+    "cloud_cover": 0.0,
+    "wind_speed_10m": 0.0,
+    "wind_direction_10m": 0.0,
+    "wind_gusts_10m": 0.0,
+    "pm10": 0.0,
+    "pm2_5": 0.0,
+    "carbon_monoxide": 0.0,
+    "nitrogen_dioxide": 0.0,
+    "sulphur_dioxide": 0.0,
+    "ozone": 0.0,
+    "us_aqi": 0.0
+  },
+  "pearson_correlation_with_us_aqi": {
+    "pm2_5": 0.7201,
+    "sulphur_dioxide": 0.5028,
+    "carbon_monoxide": 0.4492,
+    "surface_pressure": 0.436,
+    "nitrogen_dioxide": 0.358,
+    "pm10": 0.2581,
+    "ozone": 0.1468,
+    "precipitation": -0.0392,
+    "rain": -0.0392,
+    "cloud_cover": -0.2435,
+    "wind_direction_10m": -0.2787,
+    "wind_gusts_10m": -0.3284,
+    "relative_humidity_2m": -0.3411,
+    "temperature_2m": -0.3426,
+    "wind_speed_10m": -0.3851
+  },
+  "spearman_correlation_with_us_aqi": {
+    "pm2_5": 0.7376,
+    "sulphur_dioxide": 0.5168,
+    "carbon_monoxide": 0.5115,
+    "surface_pressure": 0.4136,
+    "nitrogen_dioxide": 0.3412,
+    "pm10": 0.3205,
+    "ozone": 0.0993,
+    "wind_direction_10m": -0.1647,
+    "rain": -0.1877,
+    "precipitation": -0.1877,
+    "cloud_cover": -0.2889,
+    "temperature_2m": -0.2988,
+    "relative_humidity_2m": -0.335,
+    "wind_gusts_10m": -0.3516,
+    "wind_speed_10m": -0.4363
+  },
+  "lagged_pollutant_correlation_with_us_aqi": {
+    "pm2_5": {
+      "lag_1h": 0.733,
+      "lag_6h": 0.7942,
+      "lag_24h": 0.7326
+    },
+    "pm10": {
+      "lag_1h": 0.2742,
+      "lag_6h": 0.3409,
+      "lag_24h": 0.3061
+    },
+    "carbon_monoxide": {
+      "lag_1h": 0.4444,
+      "lag_6h": 0.4569,
+      "lag_24h": 0.451
+    },
+    "nitrogen_dioxide": {
+      "lag_1h": 0.3453,
+      "lag_6h": 0.3409,
+      "lag_24h": 0.3445
+    },
+    "sulphur_dioxide": {
+      "lag_1h": 0.5156,
+      "lag_6h": 0.5661,
+      "lag_24h": 0.4848
+    },
+    "ozone": {
+      "lag_1h": 0.1706,
+      "lag_6h": 0.2063,
+      "lag_24h": 0.1415
+    }
+  },
+  "notes": [
+    "Correlations are exploratory and not causal claims.",
+    "Rolling EDA statistics are backward-looking and are not target features by themselves.",
+    "No future forecast inputs are created by this EDA step."
+  ]
+}

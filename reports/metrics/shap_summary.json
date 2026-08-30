@@ -1,0 +1,269 @@
+[
+  {
+    "horizon": "day1",
+    "model_family": "ridge",
+    "sample_rows": 500,
+    "top_features": [
+      {
+        "feature": "pm2_5",
+        "mean_abs_shap": 10.79066021381622
+      },
+      {
+        "feature": "sulphur_dioxide_lag_1h",
+        "mean_abs_shap": 9.706413610987008
+      },
+      {
+        "feature": "sulphur_dioxide",
+        "mean_abs_shap": 8.300260735474428
+      },
+      {
+        "feature": "aqi_roll_mean_12h",
+        "mean_abs_shap": 6.440056725180659
+      },
+      {
+        "feature": "aqi_roll_max_24h",
+        "mean_abs_shap": 5.972157346411006
+      },
+      {
+        "feature": "aqi_roll_mean_24h",
+        "mean_abs_shap": 5.949772903689605
+      },
+      {
+        "feature": "temperature_2m_lag_24h",
+        "mean_abs_shap": 4.89928471852187
+      },
+      {
+        "feature": "pm2_5_roll_mean_6h",
+        "mean_abs_shap": 4.408343505752489
+      },
+      {
+        "feature": "pm2_5_lag_24h",
+        "mean_abs_shap": 4.233007682798676
+      },
+      {
+        "feature": "aqi_roll_mean_6h",
+        "mean_abs_shap": 3.908055953372292
+      },
+      {
+        "feature": "month_cos",
+        "mean_abs_shap": 3.7847462110771666
+      },
+      {
+        "feature": "temperature_2m",
+        "mean_abs_shap": 3.4903803985172406
+      },
+      {
+        "feature": "carbon_monoxide_lag_1h",
+        "mean_abs_shap": 2.8690553912055083
+      },
+      {
+        "feature": "surface_pressure_lag_6h",
+        "mean_abs_shap": 2.7291861434718516
+      },
+      {
+        "feature": "ozone",
+        "mean_abs_shap": 2.669680443874835
+      },
+      {
+        "feature": "pm2_5_roll_mean_12h",
+        "mean_abs_shap": 2.468943064249972
+      },
+      {
+        "feature": "sulphur_dioxide_lag_3h",
+        "mean_abs_shap": 2.3869665482721536
+      },
+      {
+        "feature": "carbon_monoxide",
+        "mean_abs_shap": 2.315175385788105
+      },
+      {
+        "feature": "wind_speed_10m",
+        "mean_abs_shap": 2.3016660640435544
+      },
+      {
+        "feature": "surface_pressure_lag_1h",
+        "mean_abs_shap": 2.280770538105947
+      }
+    ],
+    "csv_path": "C:\\Users\\henna\\Downloads\\10Pearls_Shine\\reports\\explainability\\shap_importance_day1.csv",
+    "figure_path": "C:\\Users\\henna\\Downloads\\10Pearls_Shine\\reports\\explainability\\shap_importance_day1.png"
+  },
+  {
+    "horizon": "day2",
+    "model_family": "gradient_boosting",
+    "sample_rows": 500,
+    "top_features": [
+      {
+        "feature": "month_cos",
+        "mean_abs_shap": 3.336943396468221
+      },
+      {
+        "feature": "pm2_5",
+        "mean_abs_shap": 3.2762950166584606
+      },
+      {
+        "feature": "day_of_year",
+        "mean_abs_shap": 2.2041377603870913
+      },
+      {
+        "feature": "pm2_5_roll_mean_12h",
+        "mean_abs_shap": 1.6320595739710633
+      },
+      {
+        "feature": "pm2_5_roll_mean_6h",
+        "mean_abs_shap": 1.2173590104928698
+      },
+      {
+        "feature": "day_of_month",
+        "mean_abs_shap": 0.6434076538612312
+      },
+      {
+        "feature": "sulphur_dioxide_lag_12h",
+        "mean_abs_shap": 0.6231325008128322
+      },
+      {
+        "feature": "pm10_lag_24h",
+        "mean_abs_shap": 0.5925848928302018
+      },
+      {
+        "feature": "pm2_5_roll_mean_24h",
+        "mean_abs_shap": 0.5865360970492047
+      },
+      {
+        "feature": "pm10_roll_mean_24h",
+        "mean_abs_shap": 0.513247444056971
+      },
+      {
+        "feature": "aqi_change_3h",
+        "mean_abs_shap": 0.4541887881288431
+      },
+      {
+        "feature": "pm10",
+        "mean_abs_shap": 0.3917347944764229
+      },
+      {
+        "feature": "temperature_2m_roll_mean_24h",
+        "mean_abs_shap": 0.37470474384886
+      },
+      {
+        "feature": "relative_humidity_2m_roll_mean_6h",
+        "mean_abs_shap": 0.34582110306959646
+      },
+      {
+        "feature": "dow_sin",
+        "mean_abs_shap": 0.3202816370952498
+      },
+      {
+        "feature": "aqi_roll_max_24h",
+        "mean_abs_shap": 0.2950839748845361
+      },
+      {
+        "feature": "wind_dir_sin",
+        "mean_abs_shap": 0.2856613420006679
+      },
+      {
+        "feature": "relative_humidity_2m_roll_mean_24h",
+        "mean_abs_shap": 0.27956641451668857
+      },
+      {
+        "feature": "relative_humidity_2m_lag_1h",
+        "mean_abs_shap": 0.24616891382234588
+      },
+      {
+        "feature": "aqi_change_6h",
+        "mean_abs_shap": 0.2403449602740165
+      }
+    ],
+    "csv_path": "C:\\Users\\henna\\Downloads\\10Pearls_Shine\\reports\\explainability\\shap_importance_day2.csv",
+    "figure_path": "C:\\Users\\henna\\Downloads\\10Pearls_Shine\\reports\\explainability\\shap_importance_day2.png"
+  },
+  {
+    "horizon": "day3",
+    "model_family": "gradient_boosting",
+    "sample_rows": 500,
+    "top_features": [
+      {
+        "feature": "month_cos",
+        "mean_abs_shap": 4.815054323454153
+      },
+      {
+        "feature": "day_of_year",
+        "mean_abs_shap": 3.2526829033356695
+      },
+      {
+        "feature": "temperature_2m_roll_mean_24h",
+        "mean_abs_shap": 1.8917828401349823
+      },
+      {
+        "feature": "pm2_5",
+        "mean_abs_shap": 0.9269938964509216
+      },
+      {
+        "feature": "wind_speed_10m_roll_mean_24h",
+        "mean_abs_shap": 0.86646949583842
+      },
+      {
+        "feature": "day_of_month",
+        "mean_abs_shap": 0.8559685847920417
+      },
+      {
+        "feature": "pm2_5_roll_mean_12h",
+        "mean_abs_shap": 0.8375885485083227
+      },
+      {
+        "feature": "surface_pressure",
+        "mean_abs_shap": 0.6612835358352566
+      },
+      {
+        "feature": "precipitation_roll_sum_24h",
+        "mean_abs_shap": 0.5841665987206709
+      },
+      {
+        "feature": "sulphur_dioxide_lag_24h",
+        "mean_abs_shap": 0.5258088127050728
+      },
+      {
+        "feature": "pm2_5_roll_mean_24h",
+        "mean_abs_shap": 0.40728323746311584
+      },
+      {
+        "feature": "pm10_roll_mean_24h",
+        "mean_abs_shap": 0.357330480118077
+      },
+      {
+        "feature": "pm10_roll_mean_12h",
+        "mean_abs_shap": 0.30846604755168966
+      },
+      {
+        "feature": "aqi_roll_std_24h",
+        "mean_abs_shap": 0.3035800671626192
+      },
+      {
+        "feature": "sulphur_dioxide",
+        "mean_abs_shap": 0.2978029088518094
+      },
+      {
+        "feature": "pm10_lag_24h",
+        "mean_abs_shap": 0.2878881037715601
+      },
+      {
+        "feature": "surface_pressure_lag_24h",
+        "mean_abs_shap": 0.2718485937313831
+      },
+      {
+        "feature": "surface_pressure_lag_6h",
+        "mean_abs_shap": 0.24712935786756257
+      },
+      {
+        "feature": "aqi_roll_max_24h",
+        "mean_abs_shap": 0.2449592979927569
+      },
+      {
+        "feature": "day_of_week",
+        "mean_abs_shap": 0.22402697342476047
+      }
+    ],
+    "csv_path": "C:\\Users\\henna\\Downloads\\10Pearls_Shine\\reports\\explainability\\shap_importance_day3.csv",
+    "figure_path": "C:\\Users\\henna\\Downloads\\10Pearls_Shine\\reports\\explainability\\shap_importance_day3.png"
+  }
+]

@@ -1,0 +1,162 @@
+[
+  {
+    "feature": "temperature_2m",
+    "historical_available": true,
+    "live_current_available": true,
+    "same_units_semantics": true,
+    "missingness_percent": 0.0,
+    "missingness_acceptable": true,
+    "keep": true,
+    "reason": "Kept: available consistently with acceptable missingness."
+  },
+  {
+    "feature": "relative_humidity_2m",
+    "historical_available": true,
+    "live_current_available": true,
+    "same_units_semantics": true,
+    "missingness_percent": 0.0,
+    "missingness_acceptable": true,
+    "keep": true,
+    "reason": "Kept: available consistently with acceptable missingness."
+  },
+  {
+    "feature": "precipitation",
+    "historical_available": true,
+    "live_current_available": true,
+    "same_units_semantics": true,
+    "missingness_percent": 0.0,
+    "missingness_acceptable": true,
+    "keep": true,
+    "reason": "Kept: available consistently with acceptable missingness."
+  },
+  {
+    "feature": "rain",
+    "historical_available": true,
+    "live_current_available": true,
+    "same_units_semantics": true,
+    "missingness_percent": 0.0,
+    "missingness_acceptable": true,
+    "keep": true,
+    "reason": "Kept: available consistently with acceptable missingness."
+  },
+  {
+    "feature": "surface_pressure",
+    "historical_available": true,
+    "live_current_available": true,
+    "same_units_semantics": true,
+    "missingness_percent": 0.0,
+    "missingness_acceptable": true,
+    "keep": true,
+    "reason": "Kept: available consistently with acceptable missingness."
+  },
+  {
+    "feature": "cloud_cover",
+    "historical_available": true,
+    "live_current_available": true,
+    "same_units_semantics": true,
+    "missingness_percent": 0.0,
+    "missingness_acceptable": true,
+    "keep": true,
+    "reason": "Kept: available consistently with acceptable missingness."
+  },
+  {
+    "feature": "wind_speed_10m",
+    "historical_available": true,
+    "live_current_available": true,
+    "same_units_semantics": true,
+    "missingness_percent": 0.0,
+    "missingness_acceptable": true,
+    "keep": true,
+    "reason": "Kept: available consistently with acceptable missingness."
+  },
+  {
+    "feature": "wind_direction_10m",
+    "historical_available": true,
+    "live_current_available": true,
+    "same_units_semantics": true,
+    "missingness_percent": 0.0,
+    "missingness_acceptable": true,
+    "keep": true,
+    "reason": "Kept: available consistently with acceptable missingness."
+  },
+  {
+    "feature": "wind_gusts_10m",
+    "historical_available": true,
+    "live_current_available": true,
+    "same_units_semantics": true,
+    "missingness_percent": 0.0,
+    "missingness_acceptable": true,
+    "keep": true,
+    "reason": "Kept: available consistently with acceptable missingness."
+  },
+  {
+    "feature": "pm10",
+    "historical_available": true,
+    "live_current_available": true,
+    "same_units_semantics": true,
+    "missingness_percent": 0.0,
+    "missingness_acceptable": true,
+    "keep": true,
+    "reason": "Kept: available consistently with acceptable missingness."
+  },
+  {
+    "feature": "pm2_5",
+    "historical_available": true,
+    "live_current_available": true,
+    "same_units_semantics": true,
+    "missingness_percent": 0.0,
+    "missingness_acceptable": true,
+    "keep": true,
+    "reason": "Kept: available consistently with acceptable missingness."
+  },
+  {
+    "feature": "carbon_monoxide",
+    "historical_available": true,
+    "live_current_available": true,
+    "same_units_semantics": true,
+    "missingness_percent": 0.0,
+    "missingness_acceptable": true,
+    "keep": true,
+    "reason": "Kept: available consistently with acceptable missingness."
+  },
+  {
+    "feature": "nitrogen_dioxide",
+    "historical_available": true,
+    "live_current_available": true,
+    "same_units_semantics": true,
+    "missingness_percent": 0.0,
+    "missingness_acceptable": true,
+    "keep": true,
+    "reason": "Kept: available consistently with acceptable missingness."
+  },
+  {
+    "feature": "sulphur_dioxide",
+    "historical_available": true,
+    "live_current_available": true,
+    "same_units_semantics": true,
+    "missingness_percent": 0.0,
+    "missingness_acceptable": true,
+    "keep": true,
+    "reason": "Kept: available consistently with acceptable missingness."
+  },
+  {
+    "feature": "ozone",
+    "historical_available": true,
+    "live_current_available": true,
+    "same_units_semantics": true,
+    "missingness_percent": 0.0,
+    "missingness_acceptable": true,
+    "keep": true,
+    "reason": "Kept: available consistently with acceptable missingness."
+  },
+  {
+    "feature": "us_aqi",
+    "historical_available": true,
+    "live_current_available": true,
+    "same_units_semantics": true,
+    "missingness_percent": 0.0,
+    "missingness_acceptable": true,
+    "keep": true,
+    "reason": "Kept: available consistently with acceptable missingness."
+  }
+]

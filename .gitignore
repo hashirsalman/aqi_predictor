@@ -1,0 +1,33 @@
+.env
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+.matplotlib-cache/
+.hopsworks-certs/
+
+# Local development data/artifacts only. Production data lives in Hopsworks.
+data/raw/
+data/processed/
+models/
+
+# Notebook and editor noise
+.ipynb_checkpoints/
+.vscode/
+.idea/
+
+# Codex/internal planning handoff files not intended for public submission
+README_CODEX_MASTER_AQI_REVISED_2026-08-29.md
+IMPLEMENTATION_STATUS.md
+DECISIONS.md
+.codex/
+.agents/
+
+# Operating system files
+.DS_Store
+Thumbs.db

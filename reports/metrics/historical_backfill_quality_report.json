@@ -1,0 +1,405 @@
+{
+  "city": "Karachi",
+  "country": "Pakistan",
+  "source": "Open-Meteo weather archive and air-quality API",
+  "aqi_standard": "US AQI via us_aqi",
+  "requested_start_date": "2024-08-24",
+  "requested_end_date": "2026-08-23",
+  "local_artifact": "data\\processed\\karachi_open_meteo_hourly_backfill.csv",
+  "local_artifact_role": "development/staging only; not the production Feature Store",
+  "chunk_count": 24,
+  "chunks": [
+    {
+      "start_date": "2024-08-24",
+      "end_date": "2024-09-23",
+      "rows": 744,
+      "source": "api",
+      "cache_path": "data\\raw\\open_meteo\\open_meteo_karachi_2024-08-24_2024-09-23.csv"
+    },
+    {
+      "start_date": "2024-09-24",
+      "end_date": "2024-10-24",
+      "rows": 744,
+      "source": "api",
+      "cache_path": "data\\raw\\open_meteo\\open_meteo_karachi_2024-09-24_2024-10-24.csv"
+    },
+    {
+      "start_date": "2024-10-25",
+      "end_date": "2024-11-24",
+      "rows": 744,
+      "source": "api",
+      "cache_path": "data\\raw\\open_meteo\\open_meteo_karachi_2024-10-25_2024-11-24.csv"
+    },
+    {
+      "start_date": "2024-11-25",
+      "end_date": "2024-12-25",
+      "rows": 744,
+      "source": "api",
+      "cache_path": "data\\raw\\open_meteo\\open_meteo_karachi_2024-11-25_2024-12-25.csv"
+    },
+    {
+      "start_date": "2024-12-26",
+      "end_date": "2025-01-25",
+      "rows": 744,
+      "source": "api",
+      "cache_path": "data\\raw\\open_meteo\\open_meteo_karachi_2024-12-26_2025-01-25.csv"
+    },
+    {
+      "start_date": "2025-01-26",
+      "end_date": "2025-02-25",
+      "rows": 744,
+      "source": "api",
+      "cache_path": "data\\raw\\open_meteo\\open_meteo_karachi_2025-01-26_2025-02-25.csv"
+    },
+    {
+      "start_date": "2025-02-26",
+      "end_date": "2025-03-28",
+      "rows": 744,
+      "source": "api",
+      "cache_path": "data\\raw\\open_meteo\\open_meteo_karachi_2025-02-26_2025-03-28.csv"
+    },
+    {
+      "start_date": "2025-03-29",
+      "end_date": "2025-04-28",
+      "rows": 744,
+      "source": "api",
+      "cache_path": "data\\raw\\open_meteo\\open_meteo_karachi_2025-03-29_2025-04-28.csv"
+    },
+    {
+      "start_date": "2025-04-29",
+      "end_date": "2025-05-29",
+      "rows": 744,
+      "source": "api",
+      "cache_path": "data\\raw\\open_meteo\\open_meteo_karachi_2025-04-29_2025-05-29.csv"
+    },
+    {
+      "start_date": "2025-05-30",
+      "end_date": "2025-06-29",
+      "rows": 744,
+      "source": "api",
+      "cache_path": "data\\raw\\open_meteo\\open_meteo_karachi_2025-05-30_2025-06-29.csv"
+    },
+    {
+      "start_date": "2025-06-30",
+      "end_date": "2025-07-30",
+      "rows": 744,
+      "source": "api",
+      "cache_path": "data\\raw\\open_meteo\\open_meteo_karachi_2025-06-30_2025-07-30.csv"
+    },
+    {
+      "start_date": "2025-07-31",
+      "end_date": "2025-08-30",
+      "rows": 744,
+      "source": "api",
+      "cache_path": "data\\raw\\open_meteo\\open_meteo_karachi_2025-07-31_2025-08-30.csv"
+    },
+    {
+      "start_date": "2025-08-31",
+      "end_date": "2025-09-30",
+      "rows": 744,
+      "source": "api",
+      "cache_path": "data\\raw\\open_meteo\\open_meteo_karachi_2025-08-31_2025-09-30.csv"
+    },
+    {
+      "start_date": "2025-10-01",
+      "end_date": "2025-10-31",
+      "rows": 744,
+      "source": "api",
+      "cache_path": "data\\raw\\open_meteo\\open_meteo_karachi_2025-10-01_2025-10-31.csv"
+    },
+    {
+      "start_date": "2025-11-01",
+      "end_date": "2025-12-01",
+      "rows": 744,
+      "source": "api",
+      "cache_path": "data\\raw\\open_meteo\\open_meteo_karachi_2025-11-01_2025-12-01.csv"
+    },
+    {
+      "start_date": "2025-12-02",
+      "end_date": "2026-01-01",
+      "rows": 744,
+      "source": "api",
+      "cache_path": "data\\raw\\open_meteo\\open_meteo_karachi_2025-12-02_2026-01-01.csv"
+    },
+    {
+      "start_date": "2026-01-02",
+      "end_date": "2026-02-01",
+      "rows": 744,
+      "source": "api",
+      "cache_path": "data\\raw\\open_meteo\\open_meteo_karachi_2026-01-02_2026-02-01.csv"
+    },
+    {
+      "start_date": "2026-02-02",
+      "end_date": "2026-03-04",
+      "rows": 744,
+      "source": "api",
+      "cache_path": "data\\raw\\open_meteo\\open_meteo_karachi_2026-02-02_2026-03-04.csv"
+    },
+    {
+      "start_date": "2026-03-05",
+      "end_date": "2026-04-04",
+      "rows": 744,
+      "source": "api",
+      "cache_path": "data\\raw\\open_meteo\\open_meteo_karachi_2026-03-05_2026-04-04.csv"
+    },
+    {
+      "start_date": "2026-04-05",
+      "end_date": "2026-05-05",
+      "rows": 744,
+      "source": "api",
+      "cache_path": "data\\raw\\open_meteo\\open_meteo_karachi_2026-04-05_2026-05-05.csv"
+    },
+    {
+      "start_date": "2026-05-06",
+      "end_date": "2026-06-05",
+      "rows": 744,
+      "source": "api",
+      "cache_path": "data\\raw\\open_meteo\\open_meteo_karachi_2026-05-06_2026-06-05.csv"
+    },
+    {
+      "start_date": "2026-06-06",
+      "end_date": "2026-07-06",
+      "rows": 744,
+      "source": "api",
+      "cache_path": "data\\raw\\open_meteo\\open_meteo_karachi_2026-06-06_2026-07-06.csv"
+    },
+    {
+      "start_date": "2026-07-07",
+      "end_date": "2026-08-06",
+      "rows": 744,
+      "source": "api",
+      "cache_path": "data\\raw\\open_meteo\\open_meteo_karachi_2026-07-07_2026-08-06.csv"
+    },
+    {
+      "start_date": "2026-08-07",
+      "end_date": "2026-08-23",
+      "rows": 408,
+      "source": "api",
+      "cache_path": "data\\raw\\open_meteo\\open_meteo_karachi_2026-08-07_2026-08-23.csv"
+    }
+  ],
+  "validation_summary": {
+    "rows": 17520,
+    "start_utc": "2024-08-23T19:00:00+00:00",
+    "end_utc": "2026-08-23T18:00:00+00:00",
+    "start_local": "2024-08-24T00:00:00+05:00",
+    "end_local": "2026-08-23T23:00:00+05:00",
+    "expected_hourly_rows": 17520,
+    "missing_hour_count": 0,
+    "duplicate_event_time_count": 0,
+    "variables": [
+      "temperature_2m",
+      "relative_humidity_2m",
+      "precipitation",
+      "rain",
+      "surface_pressure",
+      "cloud_cover",
+      "wind_speed_10m",
+      "wind_direction_10m",
+      "wind_gusts_10m",
+      "pm10",
+      "pm2_5",
+      "carbon_monoxide",
+      "nitrogen_dioxide",
+      "sulphur_dioxide",
+      "ozone",
+      "us_aqi"
+    ],
+    "units": {
+      "temperature_2m": "\u00b0C",
+      "relative_humidity_2m": "%",
+      "precipitation": "mm",
+      "rain": "mm",
+      "surface_pressure": "hPa",
+      "cloud_cover": "%",
+      "wind_speed_10m": "km/h",
+      "wind_direction_10m": "\u00b0",
+      "wind_gusts_10m": "km/h",
+      "pm10": "\u03bcg/m\u00b3",
+      "pm2_5": "\u03bcg/m\u00b3",
+      "carbon_monoxide": "\u03bcg/m\u00b3",
+      "nitrogen_dioxide": "\u03bcg/m\u00b3",
+      "sulphur_dioxide": "\u03bcg/m\u00b3",
+      "ozone": "\u03bcg/m\u00b3",
+      "us_aqi": "US AQI"
+    },
+    "missing_percent": {
+      "temperature_2m": 0.0,
+      "relative_humidity_2m": 0.0,
+      "precipitation": 0.0,
+      "rain": 0.0,
+      "surface_pressure": 0.0,
+      "cloud_cover": 0.0,
+      "wind_speed_10m": 0.0,
+      "wind_direction_10m": 0.0,
+      "wind_gusts_10m": 0.0,
+      "pm10": 0.0,
+      "pm2_5": 0.0,
+      "carbon_monoxide": 0.0,
+      "nitrogen_dioxide": 0.0,
+      "sulphur_dioxide": 0.0,
+      "ozone": 0.0,
+      "us_aqi": 0.0
+    },
+    "us_aqi_min": 41.0,
+    "us_aqi_median": 82.0,
+    "us_aqi_max": 173.0,
+    "timezone_policy": "Open-Meteo local timestamps are localized to Asia/Karachi and converted to UTC for storage/joins."
+  },
+  "duplicate_timestamps_after_deduplication": 0,
+  "missing_percentage_per_feature": {
+    "temperature_2m": 0.0,
+    "relative_humidity_2m": 0.0,
+    "precipitation": 0.0,
+    "rain": 0.0,
+    "surface_pressure": 0.0,
+    "cloud_cover": 0.0,
+    "wind_speed_10m": 0.0,
+    "wind_direction_10m": 0.0,
+    "wind_gusts_10m": 0.0,
+    "pm10": 0.0,
+    "pm2_5": 0.0,
+    "carbon_monoxide": 0.0,
+    "nitrogen_dioxide": 0.0,
+    "sulphur_dioxide": 0.0,
+    "ozone": 0.0,
+    "us_aqi": 0.0
+  },
+  "numeric_distribution": {
+    "temperature_2m": {
+      "min": 9.3,
+      "p25": 24.0,
+      "median": 27.5,
+      "p75": 29.7,
+      "max": 41.2,
+      "mean": 26.64189497716895
+    },
+    "relative_humidity_2m": {
+      "min": 5.0,
+      "p25": 51.0,
+      "median": 70.0,
+      "p75": 82.0,
+      "max": 100.0,
+      "mean": 64.90667808219177
+    },
+    "precipitation": {
+      "min": 0.0,
+      "p25": 0.0,
+      "median": 0.0,
+      "p75": 0.0,
+      "max": 16.5,
+      "mean": 0.032208904109589036
+    },
+    "rain": {
+      "min": 0.0,
+      "p25": 0.0,
+      "median": 0.0,
+      "p75": 0.0,
+      "max": 16.5,
+      "mean": 0.032208904109589036
+    },
+    "surface_pressure": {
+      "min": 992.8,
+      "p25": 1002.4,
+      "median": 1007.7,
+      "p75": 1013.3,
+      "max": 1024.4,
+      "mean": 1007.8108618721461
+    },
+    "cloud_cover": {
+      "min": 0.0,
+      "p25": 0.0,
+      "median": 9.0,
+      "p75": 64.0,
+      "max": 100.0,
+      "mean": 31.494463470319634
+    },
+    "wind_speed_10m": {
+      "min": 0.0,
+      "p25": 7.8,
+      "median": 11.0,
+      "p75": 14.6,
+      "max": 46.6,
+      "mean": 11.439965753424659
+    },
+    "wind_direction_10m": {
+      "min": 1.0,
+      "p25": 213.0,
+      "median": 247.0,
+      "p75": 270.0,
+      "max": 360.0,
+      "mean": 219.3460616438356
+    },
+    "wind_gusts_10m": {
+      "min": 1.4,
+      "p25": 17.6,
+      "median": 25.9,
+      "p75": 35.3,
+      "max": 68.0,
+      "mean": 27.036415525114155
+    },
+    "pm10": {
+      "min": 3.7,
+      "p25": 35.7,
+      "median": 48.2,
+      "p75": 65.9,
+      "max": 504.8,
+      "mean": 55.037134703196344
+    },
+    "pm2_5": {
+      "min": 3.5,
+      "p25": 19.6,
+      "median": 25.1,
+      "p75": 33.4,
+      "max": 108.7,
+      "mean": 28.202688356164387
+    },
+    "carbon_monoxide": {
+      "min": 46.0,
+      "p25": 228.0,
+      "median": 337.0,
+      "p75": 638.0,
+      "max": 4515.0,
+      "mean": 510.78527397260274
+    },
+    "nitrogen_dioxide": {
+      "min": 0.0,
+      "p25": 7.3,
+      "median": 13.4,
+      "p75": 26.7,
+      "max": 138.5,
+      "mean": 20.20105593607306
+    },
+    "sulphur_dioxide": {
+      "min": 2.9,
+      "p25": 7.7,
+      "median": 12.4,
+      "p75": 18.0,
+      "max": 65.4,
+      "mean": 14.101135844748857
+    },
+    "ozone": {
+      "min": 0.0,
+      "p25": 44.0,
+      "median": 62.0,
+      "p75": 93.0,
+      "max": 213.0,
+      "mean": 71.07106164383562
+    },
+    "us_aqi": {
+      "min": 41.0,
+      "p25": 73.0,
+      "median": 82.0,
+      "p75": 98.0,
+      "max": 173.0,
+      "mean": 88.05211187214611
+    }
+  },
+  "imputation_policy": "No blanket fillna(0) or interpolation applied in Phase 2. Missingness is reported; feature/target phases will decide defensible handling.",
+  "date_coverage": {
+    "start_utc": "2024-08-23T19:00:00+00:00",
+    "end_utc": "2026-08-23T18:00:00+00:00",
+    "start_local": "2024-08-24T00:00:00+05:00",
+    "end_local": "2026-08-23T23:00:00+05:00"
+  }
+}
