@@ -16,6 +16,18 @@ def test_render_fastapi_blueprint_uses_free_plan_and_no_hardcoded_secrets():
     assert env_vars["HOPSWORKS_API_KEY"]["sync"] is False
     assert env_vars["HOPSWORKS_PROJECT"]["sync"] is False
     assert env_vars["HOPSWORKS_HOST"]["sync"] is False
+    assert env_vars["PYTHON_VERSION"]["value"] == "3.11.16"
+
+
+def test_python_version_is_pinned_for_render_native_runtime():
+    assert Path(".python-version").read_text(encoding="utf-8").strip() == "3.11.16"
+
+
+def test_hopsworks_dependencies_are_pinned_for_deployment_reproducibility():
+    requirements = Path("requirements.txt").read_text(encoding="utf-8")
+
+    assert "hopsworks==5.0.6" in requirements
+    assert "hsfs==2.1.8" in requirements
 
 
 def test_streamlit_deployment_notes_reference_dashboard_entrypoint_and_fastapi_url():
@@ -24,4 +36,3 @@ def test_streamlit_deployment_notes_reference_dashboard_entrypoint_and_fastapi_u
     assert "dashboard/app.py" in text
     assert "FASTAPI_BASE_URL" in text
     assert "Do not make Streamlit load local models" in text
-

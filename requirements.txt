@@ -7,8 +7,8 @@ pyyaml
 python-dotenv
 scikit-learn
 shap
-hopsworks
-hsfs
+hopsworks==5.0.6
+hsfs==2.1.8
 confluent-kafka
 fastapi
 uvicorn
