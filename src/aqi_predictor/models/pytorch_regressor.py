@@ -2,16 +2,15 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import Any
 
 import numpy as np
+from sklearn.base import BaseEstimator, RegressorMixin
 
 from aqi_predictor.constants import RANDOM_SEED
 
 
-@dataclass
-class TorchMLPRegressor:
+class TorchMLPRegressor(RegressorMixin, BaseEstimator):
     """CPU-friendly PyTorch MLP with a minimal sklearn-style interface.
 
     The class imports PyTorch lazily inside ``fit``/``predict`` so normal web
@@ -19,12 +18,23 @@ class TorchMLPRegressor:
     training-only PyTorch dependency.
     """
 
-    hidden_units: int = 64
-    epochs: int = 80
-    learning_rate: float = 0.001
-    weight_decay: float = 0.0001
-    batch_size: int = 256
-    random_state: int = RANDOM_SEED
+    def __init__(
+        self,
+        hidden_units: int = 64,
+        epochs: int = 80,
+        learning_rate: float = 0.001,
+        weight_decay: float = 0.0001,
+        batch_size: int = 256,
+        random_state: int = RANDOM_SEED,
+    ) -> None:
+        """Initialize hyperparameters in the format expected by scikit-learn."""
+
+        self.hidden_units = hidden_units
+        self.epochs = epochs
+        self.learning_rate = learning_rate
+        self.weight_decay = weight_decay
+        self.batch_size = batch_size
+        self.random_state = random_state
 
     def fit(self, x: Any, y: Any) -> "TorchMLPRegressor":
         """Fit the neural network on tabular AQI features."""
@@ -71,6 +81,7 @@ class TorchMLPRegressor:
                 loss = loss_fn(self.model_(batch_x), batch_y)
                 loss.backward()
                 optimizer.step()
+        self.is_fitted_ = True
         return self
 
     def predict(self, x: Any) -> np.ndarray:

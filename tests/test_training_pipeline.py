@@ -18,6 +18,7 @@ from aqi_predictor.features.feature_contract import CANONICAL_FEATURE_COLUMNS, T
 from aqi_predictor.models.baselines import persistence_predict
 from aqi_predictor.models.candidates import build_candidate_models
 from aqi_predictor.models.evaluation import chronological_split, regression_metrics
+from aqi_predictor.models.pytorch_regressor import TorchMLPRegressor
 from aqi_predictor.pipelines.training_pipeline import _prepare_training_frame
 
 
@@ -69,6 +70,13 @@ class TrainingPipelineTest(unittest.TestCase):
 
         self.assertIn("pytorch_mlp", candidates)
         self.assertIn("TorchMLPRegressor", repr(candidates["pytorch_mlp"]))
+
+    def test_pytorch_candidate_is_sklearn_compatible(self) -> None:
+        estimator = TorchMLPRegressor(epochs=1, hidden_units=8)
+
+        self.assertTrue(hasattr(estimator, "__sklearn_tags__"))
+        self.assertEqual(estimator.get_params()["epochs"], 1)
+        self.assertEqual(estimator.get_params()["hidden_units"], 8)
 
 
 if __name__ == "__main__":
