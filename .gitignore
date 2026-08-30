@@ -14,7 +14,7 @@ htmlcov/
 # Local development data/artifacts only. Production data lives in Hopsworks.
 data/raw/
 data/processed/
-models/
+/models/
 
 # Notebook and editor noise
 .ipynb_checkpoints/
