@@ -1,6 +1,12 @@
 name: Hourly Feature Pipeline
 
 on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - ".github/workflows/feature_pipeline.yml"
   schedule:
     # Runs once per hour. Minute 17 avoids the top-of-hour traffic spike.
     - cron: "17 * * * *"
@@ -16,6 +22,7 @@ concurrency:
 jobs:
   ingest-live-features:
     name: Fetch latest Karachi observations and upsert live features
+    if: github.event_name != 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -64,4 +71,3 @@ jobs:
           name: live-feature-pipeline-report
           path: reports/metrics/live_feature_pipeline_report.json
           if-no-files-found: warn
-

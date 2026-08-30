@@ -1,6 +1,12 @@
 name: Daily Training and Registry Pipeline
 
 on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - ".github/workflows/training_pipeline.yml"
   schedule:
     # Runs once per day after the hourly ingestion cadence has had time to land recent data.
     - cron: "32 1 * * *"
@@ -16,6 +22,7 @@ concurrency:
 jobs:
   train-and-register:
     name: Train, evaluate, and register Karachi AQI models
+    if: github.event_name != 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 60
 
@@ -71,4 +78,3 @@ jobs:
             reports/metrics/model_registry_report.json
             reports/MODEL_EXPERIMENT_SUMMARY.md
           if-no-files-found: warn
-
