@@ -220,4 +220,20 @@ FASTAPI_BASE_URL = "https://<your-fastapi-service-url>"
 
 ## Detailed Report
 
-The final project report will live at `reports/FINAL_REPORT.md`. It has not been written yet because deployment and final submission audit are still pending.
+The final detailed project report lives at `reports/FINAL_REPORT.md`.
+
+It documents:
+
+- the locked architecture and no-future-input forecasting policy;
+- Open-Meteo data ingestion and two-year historical backfill;
+- feature engineering and target construction;
+- Hopsworks Feature Store and Model Registry usage;
+- EDA findings;
+- model training/evaluation results;
+- SHAP explainability;
+- GitHub Actions automation;
+- FastAPI and Streamlit deployment;
+- hazardous AQI alerts;
+- remaining limitations and final submission checklist.
+
+Before final SHINE submission, manually verify the latest GitHub Actions hourly feature workflow, daily training workflow, FastAPI `/predict`, and Streamlit dashboard are all working.
