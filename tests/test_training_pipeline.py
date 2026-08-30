@@ -16,6 +16,7 @@ if str(SRC) not in sys.path:
 
 from aqi_predictor.features.feature_contract import CANONICAL_FEATURE_COLUMNS, TARGET_COLUMNS
 from aqi_predictor.models.baselines import persistence_predict
+from aqi_predictor.models.candidates import build_candidate_models
 from aqi_predictor.models.evaluation import chronological_split, regression_metrics
 from aqi_predictor.pipelines.training_pipeline import _prepare_training_frame
 
@@ -62,6 +63,12 @@ class TrainingPipelineTest(unittest.TestCase):
         prepared = _prepare_training_frame(frame)
 
         self.assertEqual(len(prepared), 1)
+
+    def test_candidate_set_includes_real_pytorch_model(self) -> None:
+        candidates = build_candidate_models()
+
+        self.assertIn("pytorch_mlp", candidates)
+        self.assertIn("TorchMLPRegressor", repr(candidates["pytorch_mlp"]))
 
 
 if __name__ == "__main__":

@@ -30,6 +30,16 @@ def test_hopsworks_dependencies_are_pinned_for_deployment_reproducibility():
     assert "hsfs==2.1.8" in requirements
 
 
+def test_pytorch_is_training_only_not_web_runtime_dependency():
+    requirements = Path("requirements.txt").read_text(encoding="utf-8")
+    training_requirements = Path("requirements-training.txt").read_text(encoding="utf-8")
+    render_blueprint = Path("deployment/fastapi/render.yaml").read_text(encoding="utf-8")
+
+    assert "torch" not in requirements
+    assert "torch" in training_requirements
+    assert "requirements-training.txt" not in render_blueprint
+
+
 def test_streamlit_deployment_notes_reference_dashboard_entrypoint_and_fastapi_url():
     text = Path("deployment/streamlit/README.md").read_text(encoding="utf-8")
 

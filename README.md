@@ -33,7 +33,7 @@ Implemented so far:
 - data validation and EDA outputs
 - canonical feature engineering and Day +1/Day +2/Day +3 target generation
 - Hopsworks historical Feature Group and live Feature Group
-- model training with persistence, Ridge, Random Forest, Gradient Boosting, and neural MLP candidates
+- model training with persistence, Ridge, Random Forest, Gradient Boosting, scikit-learn MLP, and PyTorch MLP candidates
 - Hopsworks Model Registry packaging/registration
 - SHAP feature-importance reports
 - GitHub Actions hourly feature ingestion and daily training workflows
@@ -120,6 +120,14 @@ $env:PYTHONPATH = "src"
 python scripts/train.py
 ```
 
+The PyTorch candidate is a training-only dependency so web deployments stay lightweight. Install it before running the full local training experiment:
+
+```powershell
+python -m pip install -r requirements-training.txt
+```
+
+The daily GitHub Actions training workflow installs `requirements-training.txt` automatically.
+
 To register selected models in Hopsworks Model Registry:
 
 ```powershell
@@ -166,7 +174,7 @@ The dashboard calls the FastAPI `/predict` endpoint using `FASTAPI_BASE_URL` fro
 http://127.0.0.1:8000
 ```
 
-The dashboard shows current observed US AQI, pollutant/weather context, source-observation freshness, Day +1/Day +2/Day +3 predicted US AQI, AQI category/alert messages, a forecast chart, and health guidance. Model registry names/versions, validation metrics, backend URL, and the raw API response are available inside the collapsed "Technical details for evaluators" section.
+The dashboard shows current observed US AQI, pollutant/weather context, source-observation freshness, Day +1/Day +2/Day +3 predicted US AQI, AQI category/alert messages, a forecast chart, and health guidance. It also includes EDA, model-comparison, and SHAP explainability tabs. Model registry names/versions, validation metrics, backend URL, and the raw API response are available in the evaluator-focused technical details tab.
 
 ## Deployment Preparation
 

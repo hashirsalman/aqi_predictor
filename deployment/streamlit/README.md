@@ -41,6 +41,9 @@ After deployment, verify the dashboard shows:
 - Day +1, Day +2, and Day +3 forecast AQI;
 - AQI categories and alerts;
 - health guidance for the strongest current/forecast AQI alert;
-- Hopsworks model registry names/versions and validation/test RMSE metrics inside the collapsed technical evaluator section.
+- EDA tab with historical trend/seasonality/correlation figures;
+- Model Comparison tab with RMSE/MAE/R² metrics;
+- Explainability tab with SHAP feature-importance figures;
+- Hopsworks model registry names/versions and validation/test RMSE metrics inside the technical evaluator section.
 
-The main page should be user-facing. Keep backend URL, raw API response, and registry internals inside the technical details expander rather than showing them as primary dashboard content.
+The main page should be user-facing. Keep backend URL, raw API response, and registry internals inside the technical details tab rather than showing them as primary dashboard content.

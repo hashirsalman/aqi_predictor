@@ -9,14 +9,14 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
 from aqi_predictor.constants import RANDOM_SEED
+from aqi_predictor.models.pytorch_regressor import TorchMLPRegressor
 
 
 def build_candidate_models() -> dict[str, object]:
     """Build deterministic AQI regression candidates.
 
-    The neural candidate is intentionally a small scikit-learn MLP so it can run on
-    CPU/free-tier environments. A TensorFlow/PyTorch model can be added later as a
-    heavier optional experiment, but this keeps Phase 7 reproducible locally.
+    The candidate set includes the required Ridge and Random Forest models,
+    a boosting model, a lightweight scikit-learn MLP, and a small PyTorch MLP.
     """
 
     return {
@@ -53,6 +53,22 @@ def build_candidate_models() -> dict[str, object]:
                         early_stopping=True,
                         validation_fraction=0.15,
                         max_iter=300,
+                        random_state=RANDOM_SEED,
+                    ),
+                ),
+            ]
+        ),
+        "pytorch_mlp": Pipeline(
+            steps=[
+                ("scaler", StandardScaler()),
+                (
+                    "model",
+                    TorchMLPRegressor(
+                        hidden_units=64,
+                        epochs=80,
+                        learning_rate=0.001,
+                        weight_decay=0.0001,
+                        batch_size=256,
                         random_state=RANDOM_SEED,
                     ),
                 ),

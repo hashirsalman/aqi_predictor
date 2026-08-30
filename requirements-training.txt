@@ -1,0 +1,5 @@
+# Training-only dependencies.
+#
+# PyTorch is intentionally kept out of requirements.txt so FastAPI/Streamlit
+# deployments do not install this large package for normal web serving.
+torch>=2.2,<3

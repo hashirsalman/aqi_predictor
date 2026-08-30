@@ -156,7 +156,8 @@ def _model_notes(model_name: str) -> str:
         "ridge": "Linear statistical baseline with feature scaling.",
         "random_forest": "Tree ensemble candidate.",
         "gradient_boosting": "Boosting candidate using scikit-learn gradient boosting.",
-        "neural_mlp": "Small CPU-friendly neural-network/MLP candidate; TensorFlow/PyTorch can be added later as heavier optional experiment.",
+        "neural_mlp": "Small CPU-friendly scikit-learn neural-network/MLP candidate.",
+        "pytorch_mlp": "Small CPU-friendly PyTorch neural-network candidate.",
     }
     return notes[model_name]
 

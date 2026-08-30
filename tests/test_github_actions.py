@@ -43,6 +43,7 @@ def test_daily_training_workflow_trains_then_registers_models():
     register_index = workflow_text.index("python scripts/register_models.py")
 
     assert train_index < register_index
+    assert "python -m pip install -r requirements-training.txt" in workflow_text
 
 
 def test_hopsworks_secrets_are_referenced_but_not_hard_coded():
@@ -61,4 +62,3 @@ def test_ci_workflow_runs_tests_without_hopsworks_secrets():
 
     assert "python -m pytest" in workflow_text
     assert "HOPSWORKS_API_KEY" not in workflow_text
-
