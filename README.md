@@ -1,248 +1,359 @@
-# Pearls AQI Predictor
+# Pearls AQI Predictor - Final Project Report
 
-Pearls AQI Predictor is an end-to-end, serverless-oriented AQI forecasting project for Karachi, Pakistan.
+## 1. Executive Summary
 
-The locked architecture is:
+Pearls AQI Predictor is an end-to-end AQI forecasting system for Karachi, Pakistan. It predicts the next three daily-average US AQI values using a serverless-oriented MLOps stack:
 
-Karachi -> Open-Meteo -> Feature Engineering -> Hopsworks Feature Store -> Daily Training -> Hopsworks Model Registry -> FastAPI -> Streamlit
+```text
+Open-Meteo -> Feature Engineering -> Hopsworks Feature Store -> Model Training
+-> Hopsworks Model Registry -> FastAPI -> Streamlit
+```
 
-The system will predict three separate daily-average US AQI values:
-
-- Day +1 average US AQI over future hours `t+1` through `t+24`
-- Day +2 average US AQI over future hours `t+25` through `t+48`
-- Day +3 average US AQI over future hours `t+49` through `t+72`
-
-Important rules:
-
-- Use Open-Meteo for historical and live/current weather and air-quality data.
-- Use US AQI, preferably the Open-Meteo `us_aqi` field.
-- Use only current and historical observed inputs at inference time.
-- Do not use future weather, future pollutant, or future AQI values as model inputs.
-- Use Hopsworks Feature Store and Hopsworks Model Registry for the production architecture.
-- Use GitHub Actions for hourly feature ingestion and daily training.
-- Use FastAPI for inference and Streamlit for the dashboard.
-- Keep the budget at `$0`.
-
-## Current Status
-
-The project now includes the core data, feature, training, registry, automation, explainability, FastAPI inference, and Streamlit dashboard pieces.
-
-Implemented so far:
-
-- Open-Meteo Karachi historical/live ingestion
-- data validation and EDA outputs
-- canonical feature engineering and Day +1/Day +2/Day +3 target generation
-- Hopsworks historical Feature Group and live Feature Group
-- model training with persistence, Ridge, Random Forest, Gradient Boosting, scikit-learn MLP, and PyTorch MLP candidates
-- Hopsworks Model Registry packaging/registration
-- SHAP feature-importance reports
-- GitHub Actions hourly feature ingestion and daily training workflows
-- FastAPI inference backend with AQI health alerts
-- Streamlit dashboard that calls FastAPI
+The project satisfies the core internship requirement: a reproducible pipeline that collects weather and pollutant data, builds model features and targets, stores them in a cloud feature store, trains multiple forecasting models, registers selected models, automates pipeline runs, and exposes real-time predictions through an interactive dashboard.
 
 Live deployment URLs:
 
 - FastAPI backend: `https://pearls-aqi-fastapi.onrender.com`
 - Streamlit dashboard: `https://aqipredictor-x3knr3fztvobzbemejnf3l.streamlit.app/`
 
-Internal planning/handoff files such as `IMPLEMENTATION_STATUS.md` and `README_CODEX_MASTER_AQI_REVISED_2026-08-29.md` are kept locally and intentionally excluded from the public repository.
+## 2. Locked Forecast Objective
 
-## Local Checks
+The project predicts US AQI directly, not pollutant concentration and not AQI category labels.
 
-From the repository root:
+Three separate regression targets are used:
 
-```powershell
-$env:PYTHONPATH = "src"
-python -m unittest discover -s tests
+| Horizon | Target definition |
+| --- | --- |
+| Day +1 | Mean US AQI over future hours `t+1` through `t+24` |
+| Day +2 | Mean US AQI over future hours `t+25` through `t+48` |
+| Day +3 | Mean US AQI over future hours `t+49` through `t+72` |
+
+The system uses three separate model artifacts, one per forecast horizon.
+
+Important leakage policy:
+
+- Inference uses only current and historical observed features.
+- No future weather forecasts are used as model inputs.
+- No future pollutant forecasts are used as model inputs.
+- No future AQI values are used as model inputs.
+
+## 3. Data Source
+
+Primary source:
+
+- Open-Meteo weather archive/current APIs
+- Open-Meteo air-quality archive/current APIs
+
+Location:
+
+- City: Karachi, Pakistan
+- Latitude: `24.8607`
+- Longitude: `67.0011`
+- Time zone: `Asia/Karachi`
+
+AQI standard:
+
+- US AQI, using Open-Meteo `us_aqi`
+
+Selected pollutant and weather variables:
+
+- AQI/pollutants: `us_aqi`, `pm2_5`, `pm10`, `carbon_monoxide`, `nitrogen_dioxide`, `sulphur_dioxide`, `ozone`
+- Weather: `temperature_2m`, `relative_humidity_2m`, `precipitation`, `rain`, `surface_pressure`, `cloud_cover`, `wind_speed_10m`, `wind_direction_10m`, `wind_gusts_10m`
+
+Open-Meteo/CAMS air-quality data may be modeled or reanalysis-derived rather than direct physical station readings. This is acceptable for this project because the same source family is used consistently for historical training and live inference.
+
+## 4. Historical Backfill
+
+The historical backfill collected two years of hourly Karachi data.
+
+Backfill result:
+
+| Item | Value |
+| --- | --- |
+| Requested date range | `2024-08-24` through `2026-08-23` |
+| UTC coverage | `2024-08-23T19:00:00+00:00` through `2026-08-23T18:00:00+00:00` |
+| Local coverage | `2024-08-24T00:00:00+05:00` through `2026-08-23T23:00:00+05:00` |
+| Rows collected | `17,520` |
+| Expected hourly rows | `17,520` |
+| Missing hourly rows | `0` |
+| Duplicate timestamps | `0` |
+| US AQI min / median / max | `41.0` / `82.0` / `173.0` |
+
+Local backfill CSV files are development/staging artifacts only. Production features are stored in Hopsworks Feature Store.
+
+## 5. Feature Engineering And Targets
+
+The feature contract contains `115` model input features.
+
+Feature groups include:
+
+- current observed pollutant and weather values;
+- time-based features such as hour, day of week, day of month, month, and day of year;
+- cyclic time encodings such as `hour_sin`, `hour_cos`, `month_sin`, and `month_cos`;
+- wind direction sine/cosine features;
+- AQI change-rate features such as `aqi_change_1h`, `aqi_change_3h`, `aqi_change_6h`, and `aqi_pct_change_1h`;
+- lag features for AQI, pollutants, and weather;
+- backward-looking rolling statistics, including rolling AQI mean/std/min/max and rolling pollutant/weather summaries.
+
+Feature/target build result:
+
+| Item | Value |
+| --- | --- |
+| Input rows | `17,520` |
+| Engineered rows before filtering | `17,520` |
+| Complete supervised rows | `17,280` |
+| Dropped initial rows for lags/rolls | `168` |
+| Dropped final rows for target windows | `72` |
+| Feature count | `115` |
+| Target columns | `target_aqi_day1`, `target_aqi_day2`, `target_aqi_day3` |
+| First supervised UTC timestamp | `2024-08-30T19:00:00+00:00` |
+| Last supervised UTC timestamp | `2026-08-20T18:00:00+00:00` |
+
+All selected base variables passed the train/serve consistency check.
+
+## 6. Feature Store
+
+Cloud Feature Store:
+
+- Provider: Hopsworks
+- Feature Group: `karachi_aqi_hourly_features`
+- Version: `1`
+- Primary key: `city`, `event_time_utc`
+- Time-travel format: HUDI
+
+Cloud validation result:
+
+| Check | Result |
+| --- | --- |
+| Expected rows | `17,280` |
+| Observed rows | `17,280` |
+| Duplicate `city + event_time_utc` rows | `0` |
+| Missing Day +1 targets | `0` |
+| Missing Day +2 targets | `0` |
+| Missing Day +3 targets | `0` |
+| All-zero feature columns | none |
+| Feature Store UTC coverage | `2024-08-30T19:00:00+00:00` through `2026-08-20T18:00:00+00:00` |
+
+The live feature pipeline writes recent/current engineered features to the Hopsworks live feature group used by FastAPI inference.
+
+## 7. EDA Findings
+
+EDA was performed on the two-year hourly backfill dataset.
+
+Key results:
+
+| Finding | Value |
+| --- | --- |
+| Rows analyzed | `17,520` |
+| US AQI median | `82.0` |
+| US AQI min / max | `41.0` / `173.0` |
+| Highest average AQI month | December |
+| Lowest average AQI month | September |
+| Hours at US AQI 101 or worse | `3,920` |
+| Hours at US AQI 151 or worse | `385` |
+| Hours at US AQI 201 or worse | `0` |
+| Hazardous hours, AQI 301+ | `0` |
+
+Strongest Pearson correlations with US AQI:
+
+| Feature | Pearson correlation |
+| --- | ---: |
+| `pm2_5` | `0.7201` |
+| `sulphur_dioxide` | `0.5028` |
+| `carbon_monoxide` | `0.4492` |
+| `surface_pressure` | `0.4360` |
+| `nitrogen_dioxide` | `0.3580` |
+| `pm10` | `0.2581` |
+
+Generated figures:
+
+- `reports/figures/eda_aqi_distribution.png`
+- `reports/figures/eda_aqi_timeseries_rolling.png`
+- `reports/figures/eda_aqi_seasonality.png`
+- `reports/figures/eda_correlation_heatmap.png`
+- `reports/figures/eda_pollutant_relationships.png`
+
+These EDA findings are exploratory and should not be interpreted as causal claims.
+
+## 8. Model Training
+
+Training reads historical features and targets from Hopsworks Feature Store.
+
+The split is chronological:
+
+| Split | Rows | Date range |
+| --- | ---: | --- |
+| Train | `12,096` | `2024-08-30T19:00:00+00:00` to `2026-01-16T18:00:00+00:00` |
+| Validation | `2,592` | `2026-01-16T19:00:00+00:00` to `2026-05-04T18:00:00+00:00` |
+| Test | `2,592` | `2026-05-04T19:00:00+00:00` to `2026-08-20T18:00:00+00:00` |
+
+Model families implemented:
+
+- Persistence baseline
+- Ridge Regression
+- Random Forest
+- Gradient Boosting
+- scikit-learn MLP neural network
+- PyTorch MLP neural network
+
+The local metric artifact currently contains the first five model families. The PyTorch candidate has been added to the training workflow and verified in GitHub Actions after a scikit-learn compatibility fix. If the GitHub workflow artifact is downloaded or local training is rerun with `requirements-training.txt`, this report can be refreshed with the PyTorch metric rows.
+
+## 9. Model Evaluation
+
+Models are evaluated with:
+
+- RMSE
+- MAE
+- R2
+- persistence-baseline comparison
+
+Selected models by validation RMSE:
+
+| Horizon | Selected model | Validation RMSE | Validation MAE | Validation R2 | Test RMSE |
+| --- | --- | ---: | ---: | ---: | ---: |
+| Day +1 | Ridge | `6.4884` | `4.9698` | `0.8451` | `3.6147` |
+| Day +2 | Gradient Boosting | `15.1694` | `11.5838` | `0.1656` | `8.1169` |
+| Day +3 | Gradient Boosting | `17.1039` | `13.2103` | `-0.0646` | `10.1054` |
+
+Persistence baseline validation RMSE:
+
+| Horizon | Persistence validation RMSE | Selected model validation RMSE | Selected model beat persistence? |
+| --- | ---: | ---: | --- |
+| Day +1 | `13.5043` | `6.4884` | yes |
+| Day +2 | `17.3132` | `15.1694` | yes |
+| Day +3 | `18.7101` | `17.1039` | yes |
+
+The Day +3 validation R2 is slightly negative, but the selected model still improves validation RMSE over persistence. This is documented rather than hidden because AQI forecasting performance should be judged using chronological holdouts and baseline comparison, not only by maximizing R2.
+
+## 10. Model Registry
+
+Selected models were registered in Hopsworks Model Registry.
+
+| Horizon | Registry name | Version | Model family | Validation RMSE | Test RMSE |
+| --- | --- | ---: | --- | ---: | ---: |
+| Day +1 | `karachi_aqi_day1` | `1` | Ridge | `6.4884` | `3.6147` |
+| Day +2 | `karachi_aqi_day2` | `1` | Gradient Boosting | `15.1694` | `8.1169` |
+| Day +3 | `karachi_aqi_day3` | `1` | Gradient Boosting | `17.1039` | `10.1054` |
+
+FastAPI loads the registered models from Hopsworks Model Registry instead of serving arbitrary local pickle files.
+
+## 11. Explainability
+
+SHAP explainability was generated for the selected model artifacts.
+
+Top SHAP features:
+
+| Horizon | Model | Most important features |
+| --- | --- | --- |
+| Day +1 | Ridge | `pm2_5`, `sulphur_dioxide_lag_1h`, `sulphur_dioxide`, `aqi_roll_mean_12h`, `aqi_roll_max_24h` |
+| Day +2 | Gradient Boosting | `month_cos`, `pm2_5`, `day_of_year`, `pm2_5_roll_mean_12h`, `pm2_5_roll_mean_6h` |
+| Day +3 | Gradient Boosting | `month_cos`, `day_of_year`, `temperature_2m_roll_mean_24h`, `pm2_5`, `wind_speed_10m_roll_mean_24h` |
+
+Generated explainability artifacts:
+
+- `reports/explainability/SHAP_SUMMARY.md`
+- `reports/explainability/shap_importance_day1.csv`
+- `reports/explainability/shap_importance_day1.png`
+- `reports/explainability/shap_importance_day2.csv`
+- `reports/explainability/shap_importance_day2.png`
+- `reports/explainability/shap_importance_day3.csv`
+- `reports/explainability/shap_importance_day3.png`
+
+## 12. Automation
+
+GitHub Actions workflows implement the required automation.
+
+| Workflow | File | Schedule | Purpose |
+| --- | --- | --- | --- |
+| CI | `.github/workflows/ci.yml` | on code validation events | Runs local validation tests |
+| Hourly Feature Pipeline | `.github/workflows/feature_pipeline.yml` | every hour | Fetches latest Open-Meteo observation, computes features, writes live features to Hopsworks |
+| Daily Training and Registry Pipeline | `.github/workflows/training_pipeline.yml` | daily | Reads Hopsworks training data, trains/evaluates models, registers selected models |
+
+Manual `workflow_dispatch` is enabled for the operational workflows so they can be triggered before final submission.
+
+The hourly pipeline does not retrain models. The daily pipeline performs retraining and registry updates.
+
+Operational note:
+
+- GitHub scheduled workflows are best-effort. Runs labeled `Scheduled` in the Actions UI prove that the automatic scheduler is active, but GitHub may start them late or occasionally skip a run under platform load.
+- Manual workflow runs are extra runs and do not reset the hourly or daily cron schedule.
+- The training data reader uses bounded retries for Hopsworks Query Service reads so transient free-tier/read-service failures do not immediately fail the daily workflow.
+- If Hopsworks remains unavailable after the retry budget, the workflow fails clearly before model registration, preserving the previously registered production models.
+
+## 13. FastAPI Backend
+
+The FastAPI backend exposes:
+
+- `GET /health`
+- `GET /predict`
+- `GET /docs`
+
+Public backend URL:
+
+- `https://pearls-aqi-fastapi.onrender.com`
+
+Verified `/health` response:
+
+```json
+{"status":"ok","service":"pearls-aqi-fastapi","required_horizons":["day1","day2","day3"]}
 ```
 
-To validate the Open-Meteo contract with a small live sample:
+The `/predict` endpoint:
 
-```powershell
-$env:PYTHONPATH = "src"
-python scripts/validate_open_meteo_contract.py
-```
+- reads the latest live features from Hopsworks Feature Store;
+- loads the latest registered model for each horizon from Hopsworks Model Registry;
+- returns current observed US AQI;
+- returns Day +1, Day +2, and Day +3 AQI forecasts;
+- returns AQI health-alert categories/messages;
+- exposes model registry names, versions, model family, and RMSE metrics;
+- states the no-future-input policy in the response.
 
-To run the historical backfill:
+## 14. Streamlit Dashboard
 
-```powershell
-$env:PYTHONPATH = "src"
-python scripts/backfill.py
-```
+Public dashboard URL:
 
-The backfill writes local staging files under `data/raw/` and `data/processed/`. Those files are intentionally gitignored because the production Feature Store will be Hopsworks.
+- `https://aqipredictor-x3knr3fztvobzbemejnf3l.streamlit.app/`
 
-To run EDA from the local backfill:
+The dashboard calls FastAPI and displays:
 
-```powershell
-$env:PYTHONPATH = "src"
-python scripts/run_eda.py
-```
+- current observed Karachi US AQI;
+- current pollutant and weather context;
+- latest observation timestamp and freshness;
+- Day +1, Day +2, and Day +3 forecast cards;
+- AQI alert/health guidance;
+- forecast chart and summary table;
+- EDA tab;
+- Model Comparison tab;
+- Explainability tab;
+- evaluator-focused Technical Details tab.
 
-EDA outputs are written to `reports/figures/`, `reports/metrics/eda_summary.json`, and `reports/EDA_SUMMARY.md`.
+The dashboard does not directly load local model files or bypass FastAPI.
 
-To build canonical features and targets:
+## 15. Hazard Alerts
 
-```powershell
-$env:PYTHONPATH = "src"
-python scripts/build_features.py
-```
+The system maps current and predicted AQI into health-alert categories, including:
 
-This writes `data/processed/karachi_features_targets.csv` as a local staging artifact and writes feature/target reports under `reports/metrics/`. The production Feature Store is still Hopsworks.
+- Good
+- Moderate
+- Unhealthy for Sensitive Groups
+- Unhealthy
+- Very Unhealthy
+- Hazardous
 
-To check Hopsworks connectivity after installing compatible dependencies:
+The dashboard shows user-friendly guidance based on the active AQI category.
 
-```powershell
-$env:PYTHONPATH = "src"
-python scripts/check_hopsworks_connection.py
-```
+## 16. Deployment
 
-To upload the engineered feature/target staging data to Hopsworks:
+The project uses free/serverless-style deployment:
 
-```powershell
-$env:PYTHONPATH = "src"
-python scripts/upload_feature_store.py
-```
+- FastAPI backend on Render Free Web Service
+- Streamlit dashboard on Streamlit Community Cloud
+- Hopsworks Feature Store and Model Registry
+- GitHub Actions for scheduled automation
 
-Use Python 3.11 for Hopsworks work. The local `.env` must contain `HOPSWORKS_PROJECT`, `HOPSWORKS_API_KEY`, and the correct non-secret `HOPSWORKS_HOST` for the user’s actual Hopsworks project/instance. Copy only the host name from Hopsworks, without `https://` and without any path. Do not use `c.app.hopsworks.ai`; that value was tested on 2026-08-30 and did not resolve from this environment.
+Important deployment compatibility fix:
 
-To run the live hourly feature pipeline locally:
+- Python is pinned to `3.11.16` because Hopsworks/HSFS dependencies are not safe on Python 3.14.
+- `hopsworks==5.0.6` and `hsfs==2.1.8` are pinned for deployment consistency.
 
-```powershell
-$env:PYTHONPATH = "src"
-python scripts/run_feature_pipeline.py
-```
-
-To train models locally from Hopsworks Feature Store:
-
-```powershell
-$env:PYTHONPATH = "src"
-python scripts/train.py
-```
-
-The training data reader uses a bounded retry/backoff policy for Hopsworks Query Service reads. This protects the daily workflow from occasional free-tier/transient Arrow Flight or Query Service failures, while still failing clearly if Hopsworks remains unavailable. It does not use a local CSV as a production fallback.
-
-The PyTorch candidate is a training-only dependency so web deployments stay lightweight. Install it before running the full local training experiment:
-
-```powershell
-python -m pip install -r requirements-training.txt
-```
-
-The daily GitHub Actions training workflow installs `requirements-training.txt` automatically.
-
-To register selected models in Hopsworks Model Registry:
-
-```powershell
-$env:PYTHONPATH = "src"
-python scripts/register_models.py
-```
-
-To run the read-only FastAPI inference smoke test:
-
-```powershell
-$env:PYTHONPATH = "src"
-python scripts/smoke_test_api.py
-```
-
-This writes `reports/metrics/api_smoke_test_report.json`.
-
-To start the FastAPI backend locally:
-
-```powershell
-$env:PYTHONPATH = "src"
-python scripts/run_api.py
-```
-
-Then open:
-
-```text
-http://127.0.0.1:8000/health
-http://127.0.0.1:8000/predict
-http://127.0.0.1:8000/docs
-```
-
-The `/predict` endpoint reads the latest live feature row from Hopsworks Feature Store, loads the latest registered Day +1, Day +2, and Day +3 models from Hopsworks Model Registry, and returns predictions with model versions, RMSE values, current AQI, data timestamp, and AQI health-alert categories.
-
-To start the Streamlit dashboard locally, first keep the FastAPI backend running in one terminal, then open a second terminal and run:
-
-```powershell
-$env:PYTHONPATH = "src;."
-python scripts/run_dashboard.py
-```
-
-The dashboard calls the FastAPI `/predict` endpoint using `FASTAPI_BASE_URL` from `.env`. If `FASTAPI_BASE_URL` is blank, it defaults to:
-
-```text
-http://127.0.0.1:8000
-```
-
-The dashboard shows current observed US AQI, pollutant/weather context, source-observation freshness, Day +1/Day +2/Day +3 predicted US AQI, AQI category/alert messages, a forecast chart, and health guidance. It also includes clean EDA, model-comparison, and SHAP explainability tabs for users/evaluators. Internal phase notes, local file paths, raw report markdown, and script instructions are intentionally not rendered in the public dashboard tabs. Model registry names/versions, validation metrics, backend URL, and the raw API response are available only in the evaluator-focused technical details tab.
-
-## Deployment Preparation
-
-Deployment has been prepared and manually executed by the repository owner on free-tier services.
-
-Prepared files:
-
-- `deployment/fastapi/render.yaml`
-- `deployment/fastapi/README.md`
-- `deployment/streamlit/README.md`
-- `.streamlit/config.toml`
-
-Recommended free-path candidate:
-
-```text
-FastAPI backend: Render Free Web Service
-Streamlit dashboard: Streamlit Community Cloud
-```
-
-Manual deployment checkpoint:
-
-- Do not deploy until the repository owner signs into the selected provider.
-- Do not choose a paid plan.
-- Do not add billing unless explicitly approved.
-- Store Hopsworks credentials and `FASTAPI_BASE_URL` only as provider secrets/environment variables.
-- Never commit `.env` or deployment secrets.
-
-GitHub Actions schedule note:
-
-- The hourly feature workflow is scheduled with cron `17 * * * *`, which means GitHub attempts to run it once per hour at minute `17` UTC.
-- The daily training workflow is scheduled with cron `32 1 * * *`, which means GitHub attempts to run it once per day at `01:32` UTC.
-- GitHub scheduled workflows are best-effort and may start late or occasionally be skipped by GitHub's scheduler. Manual runs do not reset the next scheduled run.
-- Runs labeled `Scheduled` in the Actions UI are automatic runs. Runs labeled `Manually run by <user>` are manual runs.
-
-FastAPI deployment needs these environment variables:
-
-```text
-PYTHONPATH=src
-HOPSWORKS_API_KEY=<provider secret>
-HOPSWORKS_PROJECT=<provider secret>
-HOPSWORKS_HOST=eu-west.cloud.hopsworks.ai
-HOPSWORKS_CERT_FOLDER=.hopsworks-certs
-```
-
-Streamlit deployment needs this secret after FastAPI is deployed:
-
-```toml
-FASTAPI_BASE_URL = "https://<your-fastapi-service-url>"
-```
-
-## Detailed Report
-
-The final detailed project report lives at `reports/FINAL_REPORT.md`.
-
-It documents:
-
-- the locked architecture and no-future-input forecasting policy;
-- Open-Meteo data ingestion and two-year historical backfill;
-- feature engineering and target construction;
-- Hopsworks Feature Store and Model Registry usage;
-- EDA findings;
-- model training/evaluation results;
-- SHAP explainability;
-- GitHub Actions automation;
-- FastAPI and Streamlit deployment;
-- hazardous AQI alerts;
-- remaining limitations and final submission checklist.
-
-Before final SHINE submission, manually verify the latest GitHub Actions hourly feature workflow, daily training workflow, FastAPI `/predict`, and Streamlit dashboard are all working.
+No paid API, paid database, paid GPU, or paid cloud service is required.
