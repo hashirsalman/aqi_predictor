@@ -16,6 +16,19 @@ Live deployment URLs:
 - FastAPI backend: `https://pearls-aqi-fastapi.onrender.com`
 - Streamlit dashboard: `https://aqipredictor-x3knr3fztvobzbemejnf3l.streamlit.app/`
 
+Project capabilities covered in this report:
+
+- Feature pipeline for Open-Meteo weather, pollutant, and US AQI observations.
+- Historical backfill for two years of hourly Karachi data.
+- Feature engineering with time features, lagged signals, rolling statistics, and AQI change-rate features.
+- Cloud feature storage through Hopsworks Feature Store.
+- Training pipeline that reads from the Feature Store and compares persistence, Ridge Regression, Random Forest, Gradient Boosting, scikit-learn MLP, and PyTorch MLP models.
+- Chronological model evaluation using RMSE, MAE, R2, and persistence-baseline comparison.
+- Hopsworks Model Registry storage for the selected Day +1, Day +2, and Day +3 models.
+- GitHub Actions automation for hourly feature ingestion and daily model training.
+- FastAPI prediction backend and Streamlit dashboard for real-time AQI monitoring and 3-day forecasting.
+- EDA, SHAP explainability, model comparison, pollutant/weather context, and hazardous AQI health alerts.
+
 ## 2. Locked Forecast Objective
 
 The project predicts US AQI directly, not pollutant concentration and not AQI category labels.
@@ -357,3 +370,18 @@ Important deployment compatibility fix:
 - `hopsworks==5.0.6` and `hsfs==2.1.8` are pinned for deployment consistency.
 
 No paid API, paid database, paid GPU, or paid cloud service is required.
+
+## 17. Challenges And Solutions
+
+Several practical issues came up while building the end-to-end system. The final implementation handles them in ways that preserve the project requirements, avoid data leakage, and keep the deployment within the free/serverless constraint.
+
+| Challenge | Why it mattered | Solution |
+| --- | --- | --- |
+| Keeping training and live inference consistent | AQI models can become unreliable if historical training data and live dashboard data come from different APIs, units, or timestamp conventions. | The project uses Open-Meteo for both historical backfill and recent/live observations, normalizes timestamps to UTC and Karachi local time, and uses one shared feature-engineering contract for training and inference. |
+| Avoiding future-data leakage | The dashboard predicts the next three days, so using future weather, pollutant, or AQI forecast values as inputs would make the model evaluation unrealistic. | Features are built only from current observations, historical lags, backward-looking rolling statistics, and calendar fields. Target columns and future-window values are excluded from model inputs. |
+| Creating the correct forecast target | Predicting only one AQI value at +24h/+48h/+72h would not match the intended daily forecast. | The project builds three direct regression targets: Day +1, Day +2, and Day +3 daily-average US AQI, with one model artifact per horizon. |
+| Hopsworks and Python version compatibility | Some Hopsworks/HSFS dependencies are not compatible with newer Python versions used by deployment platforms by default. | Deployment is pinned to Python `3.11.16`, with fixed Hopsworks/HSFS versions for reproducible installs on Render and GitHub Actions. |
+| Hopsworks query-service reliability on free tier | Cloud feature-store reads can occasionally fail due to transient service or free-tier limitations. | Training-data reads use bounded retries with backoff. If Hopsworks remains unavailable, the training workflow fails safely before registering new models, preserving the existing production models. |
+| Windows local-development differences | Local Windows paths and certificate handling can differ from Linux-based GitHub Actions and cloud deployment environments. | Runtime certificates and local caches are kept out of Git, and the project is validated through both local tests and GitHub Actions workflows. |
+| Balancing model complexity with free compute | Deep-learning models can become expensive or slow if oversized for a scheduled free-tier workflow. | The project includes lightweight scikit-learn and PyTorch neural candidates alongside Ridge, Random Forest, Gradient Boosting, and persistence baselines, keeping training practical on CPU-only runners. |
+| Making the dashboard user-facing | Early dashboard/report views exposed raw API responses, internal phase labels, and local file paths that were useful for development but not suitable for end users. | The Streamlit app was redesigned with cleaner visual sections for AQI status, forecast, EDA, model comparison, and explainability, while technical details are kept separate for evaluator inspection. |
