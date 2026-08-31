@@ -120,6 +120,8 @@ $env:PYTHONPATH = "src"
 python scripts/train.py
 ```
 
+The training data reader uses a bounded retry/backoff policy for Hopsworks Query Service reads. This protects the daily workflow from occasional free-tier/transient Arrow Flight or Query Service failures, while still failing clearly if Hopsworks remains unavailable. It does not use a local CSV as a production fallback.
+
 The PyTorch candidate is a training-only dependency so web deployments stay lightweight. Install it before running the full local training experiment:
 
 ```powershell
@@ -201,6 +203,13 @@ Manual deployment checkpoint:
 - Do not add billing unless explicitly approved.
 - Store Hopsworks credentials and `FASTAPI_BASE_URL` only as provider secrets/environment variables.
 - Never commit `.env` or deployment secrets.
+
+GitHub Actions schedule note:
+
+- The hourly feature workflow is scheduled with cron `17 * * * *`, which means GitHub attempts to run it once per hour at minute `17` UTC.
+- The daily training workflow is scheduled with cron `32 1 * * *`, which means GitHub attempts to run it once per day at `01:32` UTC.
+- GitHub scheduled workflows are best-effort and may start late or occasionally be skipped by GitHub's scheduler. Manual runs do not reset the next scheduled run.
+- Runs labeled `Scheduled` in the Actions UI are automatic runs. Runs labeled `Manually run by <user>` are manual runs.
 
 FastAPI deployment needs these environment variables:
 

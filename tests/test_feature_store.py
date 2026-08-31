@@ -29,6 +29,7 @@ from aqi_predictor.feature_store.feature_group import (
     prepare_feature_group_frame,
     validate_feature_store_readback,
 )
+from aqi_predictor.feature_store.training_dataset import fetch_training_dataset
 from aqi_predictor.feature_store.hopsworks_client import (
     _clear_known_blackhole_proxy,
     load_hopsworks_settings,
@@ -71,6 +72,36 @@ class FakeFeatureStore:
     def get_or_create_feature_group(self, **kwargs):
         self.kwargs = kwargs
         return object()
+
+
+class FakeReadableFeatureGroup:
+    def __init__(self, failures_before_success: int = 0) -> None:
+        self.failures_before_success = failures_before_success
+        self.read_kwargs: list[dict] = []
+
+    def read(self, **kwargs):
+        self.read_kwargs.append(kwargs)
+        if len(self.read_kwargs) <= self.failures_before_success:
+            raise RuntimeError("temporary query service failure")
+        return pd.DataFrame(
+            {
+                "event_time_utc": [
+                    pd.Timestamp("2026-01-02T00:00Z"),
+                    pd.Timestamp("2026-01-01T00:00Z"),
+                ],
+                "value": [2, 1],
+            }
+        )
+
+
+class FakeReadableFeatureStore:
+    def __init__(self, feature_group: FakeReadableFeatureGroup) -> None:
+        self.feature_group = feature_group
+        self.requested = None
+
+    def get_feature_group(self, **kwargs):
+        self.requested = kwargs
+        return self.feature_group
 
 
 class FeatureStoreIntegrationTest(unittest.TestCase):
@@ -156,6 +187,33 @@ class FeatureStoreIntegrationTest(unittest.TestCase):
 
         self.assertFalse(result.passed)
         self.assertEqual(result.missing_target_counts["target_aqi_day1"], 1)
+
+    def test_fetch_training_dataset_forces_pandas_read_and_sorts_rows(self) -> None:
+        group = FakeReadableFeatureGroup()
+        store = FakeReadableFeatureStore(group)
+
+        frame = fetch_training_dataset(store, retry_delay_seconds=0)
+
+        self.assertEqual(store.requested["name"], FEATURE_GROUP_NAME)
+        self.assertEqual(store.requested["version"], FEATURE_GROUP_VERSION)
+        self.assertEqual(group.read_kwargs, [{"dataframe_type": "pandas"}])
+        self.assertEqual(frame["value"].tolist(), [1, 2])
+
+    def test_fetch_training_dataset_retries_transient_query_failures(self) -> None:
+        group = FakeReadableFeatureGroup(failures_before_success=2)
+        store = FakeReadableFeatureStore(group)
+
+        frame = fetch_training_dataset(store, max_attempts=3, retry_delay_seconds=0)
+
+        self.assertEqual(len(group.read_kwargs), 3)
+        self.assertEqual(frame["value"].tolist(), [1, 2])
+
+    def test_fetch_training_dataset_fails_clearly_after_retry_budget(self) -> None:
+        group = FakeReadableFeatureGroup(failures_before_success=3)
+        store = FakeReadableFeatureStore(group)
+
+        with self.assertRaisesRegex(RuntimeError, "Could not read training data from Hopsworks"):
+            fetch_training_dataset(store, max_attempts=2, retry_delay_seconds=0)
 
 
 if __name__ == "__main__":

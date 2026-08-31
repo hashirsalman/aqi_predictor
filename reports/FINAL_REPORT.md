@@ -273,6 +273,13 @@ Manual `workflow_dispatch` is enabled for the operational workflows so they can 
 
 The hourly pipeline does not retrain models. The daily pipeline performs retraining and registry updates.
 
+Operational note:
+
+- GitHub scheduled workflows are best-effort. Runs labeled `Scheduled` in the Actions UI prove that the automatic scheduler is active, but GitHub may start them late or occasionally skip a run under platform load.
+- Manual workflow runs are extra runs and do not reset the hourly or daily cron schedule.
+- The training data reader uses bounded retries for Hopsworks Query Service reads so transient free-tier/read-service failures do not immediately fail the daily workflow.
+- If Hopsworks remains unavailable after the retry budget, the workflow fails clearly before model registration, preserving the previously registered production models.
+
 ## 13. FastAPI Backend
 
 The FastAPI backend exposes:
@@ -403,6 +410,7 @@ The repository intentionally excludes local `.env`, caches, certificates, and mo
 - AQI forecasts are direct statistical/ML forecasts from recent and historical observed signals. The model intentionally does not use Open-Meteo future forecast values as inputs.
 - Day +2 and Day +3 are harder forecasting problems than Day +1; their R2 scores are weaker, but selected models still beat persistence on validation RMSE.
 - Free-tier Hopsworks, Render, Streamlit, and GitHub Actions availability can change or temporarily throttle usage.
+- GitHub scheduled workflows are not guaranteed to fire at the exact cron minute every time; final evidence should include recent passing scheduled/manual workflow runs.
 - The local committed metrics file may need refreshing after future GitHub Actions training runs if the evaluator wants the newest PyTorch metric rows displayed from repository artifacts.
 
 ## 20. Final Submission Checklist
@@ -419,4 +427,3 @@ Before submitting to the SHINE portal:
 - [ ] Open `https://aqipredictor-x3knr3fztvobzbemejnf3l.streamlit.app/` and confirm the dashboard loads.
 - [ ] Confirm the dashboard shows current AQI, 3-day forecast, alerts, EDA, model comparison, and explainability tabs.
 - [ ] Submit the GitHub repository URL through the SHINE portal.
-
