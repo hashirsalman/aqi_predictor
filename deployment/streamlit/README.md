@@ -42,8 +42,8 @@ After deployment, verify the dashboard shows:
 - AQI categories and alerts;
 - health guidance for the strongest current/forecast AQI alert;
 - EDA tab with historical trend/seasonality/correlation figures;
-- Model Comparison tab with RMSE/MAE/R² metrics;
-- Explainability tab with SHAP feature-importance figures;
+- Model Comparison tab with user-friendly RMSE/MAE/R2 metrics and champion model cards;
+- Explainability tab with clean feature-importance tables and SHAP figures;
 - Hopsworks model registry names/versions and validation/test RMSE metrics inside the technical evaluator section.
 
-The main page should be user-facing. Keep backend URL, raw API response, and registry internals inside the technical details tab rather than showing them as primary dashboard content.
+The main dashboard tabs should be user-facing. Do not render raw markdown reports that include internal phase numbers, local Windows paths, CSV filenames, or implementation notes. Keep backend URL, raw API response, and registry internals inside the technical details tab rather than showing them as primary dashboard content.

@@ -1,6 +1,16 @@
 from datetime import UTC, datetime
+from pathlib import Path
+import sys
+
+import pandas as pd
+
+ROOT = Path(__file__).resolve().parents[1]
+DASHBOARD = ROOT / "dashboard"
+if str(DASHBOARD) not in sys.path:
+    sys.path.insert(0, str(DASHBOARD))
 
 from dashboard.api_client import DEFAULT_FASTAPI_BASE_URL, normalize_base_url
+from dashboard.app import _clean_metric_frame, _display_horizon, _display_model_name
 from dashboard.formatting import model_metric_table, observation_age_hours, prediction_table, strongest_alert
 
 
@@ -106,3 +116,47 @@ def test_forecast_summary_uses_rounded_predictions():
     summary = forecast_summary(_payload())
 
     assert summary == {"average": 109.0, "maximum": 155, "minimum": 63}
+
+
+def test_dashboard_model_labels_are_user_friendly():
+    assert _display_model_name("gradient_boosting") == "Gradient Boosting"
+    assert _display_horizon("day2") == "Day 2"
+
+
+def test_dashboard_metric_frame_hides_internal_column_names():
+    raw = pd.DataFrame(
+        [
+            {
+                "model": "gradient_boosting",
+                "horizon": "day1",
+                "split": "validation",
+                "rmse": 1.23456,
+                "mae": 2.34567,
+                "r2": 0.98765,
+                "beats_persistence_validation": "True",
+            }
+        ]
+    )
+
+    cleaned = _clean_metric_frame(raw)
+
+    assert cleaned.to_dict("records") == [
+        {
+            "Model": "Gradient Boosting",
+            "Horizon": "Day 1",
+            "Split": "Validation",
+            "RMSE": 1.235,
+            "MAE": 2.346,
+            "R²": 0.988,
+            "Beat Persistence": "Yes",
+        }
+    ]
+
+
+def test_dashboard_app_does_not_render_private_report_markdown():
+    app_source = (ROOT / "dashboard" / "app.py").read_text(encoding="utf-8")
+
+    assert "MODEL_EXPERIMENT_SUMMARY.md" not in app_source
+    assert "SHAP_SUMMARY.md" not in app_source
+    assert "Training report" not in app_source
+    assert "SHAP written summary" not in app_source

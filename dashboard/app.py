@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pandas as pd
@@ -31,12 +32,24 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 def main() -> None:
     """Render the dashboard."""
 
-    st.title("Pearls AQI Predictor - Karachi")
-    st.caption("Real-time air quality monitoring and 3-day US AQI forecast for Karachi.")
+    _inject_theme()
+    st.markdown(
+        """
+        <section class="hero-card">
+          <div>
+            <p class="eyebrow">Karachi Air Quality</p>
+            <h1>Pearls AQI Predictor</h1>
+            <p class="hero-copy">Real-time air-quality context and a 3-day US AQI forecast for Karachi.</p>
+          </div>
+          <div class="hero-badge">Live ML Forecast</div>
+        </section>
+        """,
+        unsafe_allow_html=True,
+    )
 
     with st.sidebar:
-        st.header("Karachi AQI")
-        st.write("3-day forecast - live observations - hazard alerts")
+        st.markdown("### Karachi AQI")
+        st.write("3-day forecast · live observations · hazard alerts")
         refresh = st.button("Refresh predictions", type="primary")
         with st.expander("Technical settings"):
             base_url = st.text_input("FastAPI base URL", value=get_fastapi_base_url())
@@ -123,8 +136,21 @@ def _render_forecast_dashboard(payload: dict) -> None:
         color="Category",
         text="Predicted AQI",
         title="Forecasted daily-average US AQI",
+        color_discrete_map={
+            "Good": "#22c55e",
+            "Moderate": "#eab308",
+            "Unhealthy for Sensitive Groups": "#f97316",
+            "Unhealthy": "#ef4444",
+            "Very Unhealthy": "#8b5cf6",
+            "Hazardous": "#7f1d1d",
+        },
     )
-    chart.update_layout(yaxis_title="US AQI", xaxis_title="Forecast horizon")
+    chart.update_layout(
+        yaxis_title="US AQI",
+        xaxis_title="Forecast horizon",
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="rgba(0,0,0,0)",
+    )
     st.plotly_chart(chart, use_container_width=True)
 
     user_table = table[["Horizon", "Target", "Predicted AQI", "Category", "Alert Level"]]
@@ -150,10 +176,16 @@ def _render_eda_tab() -> None:
 
     st.subheader("Exploratory Data Analysis")
     st.caption("Historical Karachi US AQI trends from the reproducible Open-Meteo backfill.")
-    summary_path = REPO_ROOT / "reports" / "EDA_SUMMARY.md"
-    if summary_path.exists():
-        with st.expander("EDA written summary", expanded=False):
-            st.markdown(summary_path.read_text(encoding="utf-8"))
+    summary = _load_json(REPO_ROOT / "reports" / "metrics" / "eda_summary.json")
+    if summary:
+        distribution = summary.get("aqi_distribution", {})
+        high_aqi = summary.get("high_aqi_events", {})
+        unhealthy = high_aqi.get("unhealthy_or_worse", {})
+        col1, col2, col3, col4 = st.columns(4)
+        col1.metric("Historical hours", f"{int(summary.get('rows', 0)):,}" if summary.get("rows") else "n/a")
+        col2.metric("Median US AQI", _format_optional_number(distribution.get("median")))
+        col3.metric("Highest AQI", _format_optional_number(distribution.get("max")))
+        col4.metric("Unhealthy hours", f"{int(unhealthy.get('hour_count', 0)):,}" if unhealthy else "n/a")
 
     figures = [
         ("AQI distribution", REPO_ROOT / "reports" / "figures" / "eda_aqi_distribution.png"),
@@ -175,46 +207,91 @@ def _render_model_comparison_tab() -> None:
     st.caption("Chronological validation/test metrics. Lower RMSE and MAE are better; higher R² is better.")
     metrics_path = REPO_ROOT / "reports" / "metrics" / "model_metrics.csv"
     if not metrics_path.exists():
-        st.info("Model metrics are not available yet. Run `python scripts/train.py`.")
+        st.info("Model metrics are not available yet.")
         return
 
     metrics = pd.read_csv(metrics_path)
-    st.dataframe(metrics, use_container_width=True, hide_index=True)
+    display_metrics = _clean_metric_frame(metrics)
+
+    selected = display_metrics[
+        (display_metrics["Split"] == "Validation") & (display_metrics["Beat Persistence"] == "Yes")
+    ].sort_values(["Horizon", "RMSE"])
+    if not selected.empty:
+        st.markdown("#### Current champion models")
+        champion_rows = selected.groupby("Horizon", as_index=False).first()
+        champion_cols = st.columns(len(champion_rows))
+        for column, (_, row) in zip(champion_cols, champion_rows.iterrows(), strict=False):
+            column.metric(
+                row["Horizon"],
+                row["Model"],
+                delta=f"RMSE {row['RMSE']:.2f}",
+                help="Selected from chronological validation performance.",
+            )
+
+    st.markdown("#### Validation results")
+    validation_display = display_metrics[display_metrics["Split"] == "Validation"]
+    st.dataframe(validation_display, use_container_width=True, hide_index=True)
 
     validation = metrics[metrics["split"] == "validation"].copy()
     if not validation.empty:
+        validation["Model"] = validation["model"].map(_display_model_name)
+        validation["Horizon"] = validation["horizon"].map(_display_horizon)
         chart = px.bar(
             validation,
-            x="model",
+            x="Model",
             y="rmse",
-            color="horizon",
+            color="Horizon",
             barmode="group",
             title="Validation RMSE by model and horizon",
+            color_discrete_sequence=["#0ea5e9", "#22c55e", "#f97316"],
         )
-        chart.update_layout(xaxis_title="Model", yaxis_title="Validation RMSE")
+        chart.update_layout(
+            xaxis_title="Model",
+            yaxis_title="Validation RMSE",
+            plot_bgcolor="rgba(0,0,0,0)",
+            paper_bgcolor="rgba(0,0,0,0)",
+        )
         st.plotly_chart(chart, use_container_width=True)
 
-    summary_path = REPO_ROOT / "reports" / "MODEL_EXPERIMENT_SUMMARY.md"
-    if summary_path.exists():
-        with st.expander("Training report", expanded=False):
-            st.markdown(summary_path.read_text(encoding="utf-8"))
+    with st.expander("What these metrics mean", expanded=False):
+        st.write(
+            "RMSE and MAE measure forecast error in AQI points, so lower is better. "
+            "R² summarizes how much variation the model explains on a chronological holdout. "
+            "A model is considered stronger when it improves over the persistence baseline."
+        )
 
 
 def _render_explainability_tab() -> None:
     """Render SHAP feature importance artifacts."""
 
     st.subheader("Explainability")
-    st.caption("SHAP feature-importance summaries for the selected production models.")
-    summary_path = REPO_ROOT / "reports" / "explainability" / "SHAP_SUMMARY.md"
-    if summary_path.exists():
-        with st.expander("SHAP written summary", expanded=False):
-            st.markdown(summary_path.read_text(encoding="utf-8"))
+    st.caption("Feature-importance summaries for the selected AQI forecasting models.")
 
     for horizon in ("day1", "day2", "day3"):
+        st.markdown(f"#### {_display_horizon(horizon)} feature importance")
+        importance_path = REPO_ROOT / "reports" / "explainability" / f"shap_importance_{horizon}.csv"
+        if importance_path.exists():
+            importance = pd.read_csv(importance_path).head(8)
+            importance = importance.rename(
+                columns={
+                    "rank": "Rank",
+                    "feature": "Feature",
+                    "mean_abs_shap": "Importance",
+                }
+            )
+            if "Importance" in importance:
+                importance["Importance"] = importance["Importance"].round(3)
+            st.dataframe(importance, use_container_width=True, hide_index=True)
         path = REPO_ROOT / "reports" / "explainability" / f"shap_importance_{horizon}.png"
         if path.exists():
-            st.markdown(f"#### {horizon.upper()} feature importance")
             st.image(str(path), use_container_width=True)
+
+    with st.expander("How to read this", expanded=False):
+        st.write(
+            "Higher importance means the feature had a larger average influence on model output "
+            "for the explained sample. These explanations help show which recent pollutant, weather, "
+            "and seasonal signals the model relied on most."
+        )
 
 
 def _render_technical_tab(payload: dict, base_url: str) -> None:
@@ -238,6 +315,143 @@ def _render_technical_tab(payload: dict, base_url: str) -> None:
 @st.cache_data(ttl=300, show_spinner="Fetching latest AQI predictions...")
 def _cached_payload(base_url: str, force_refresh: bool) -> dict:
     return fetch_dashboard_payload(base_url=base_url, force_model_refresh=force_refresh)
+
+
+def _inject_theme() -> None:
+    """Apply lightweight dashboard styling."""
+
+    st.markdown(
+        """
+        <style>
+        .stApp {
+            background:
+                radial-gradient(circle at top left, rgba(14, 165, 233, 0.18), transparent 30rem),
+                linear-gradient(180deg, #f8fbff 0%, #eef7f4 45%, #f8fafc 100%);
+            color: #0f172a;
+        }
+        .hero-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1.5rem 1.75rem;
+            border-radius: 1.5rem;
+            margin-bottom: 1.25rem;
+            background: linear-gradient(135deg, #0f766e 0%, #0ea5e9 52%, #22c55e 100%);
+            color: white;
+            box-shadow: 0 18px 45px rgba(15, 118, 110, 0.25);
+        }
+        .hero-card h1 {
+            margin: 0;
+            font-size: 2.6rem;
+            letter-spacing: -0.04em;
+        }
+        .hero-copy {
+            margin: 0.35rem 0 0;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.05rem;
+        }
+        .eyebrow {
+            margin: 0 0 0.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            font-size: 0.78rem;
+            color: rgba(255, 255, 255, 0.78);
+        }
+        .hero-badge {
+            white-space: nowrap;
+            padding: 0.65rem 0.9rem;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            font-weight: 700;
+        }
+        [data-testid="stMetric"] {
+            background: rgba(255, 255, 255, 0.76);
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            border-radius: 1rem;
+            padding: 1rem;
+            box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+        }
+        [data-testid="stSidebar"] {
+            background: linear-gradient(180deg, #ecfeff 0%, #f0fdf4 100%);
+        }
+        div[data-testid="stTabs"] button {
+            font-weight: 650;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def _clean_metric_frame(metrics: pd.DataFrame) -> pd.DataFrame:
+    """Return user-friendly model metrics for dashboard display."""
+
+    display = metrics.copy()
+    display = display.rename(
+        columns={
+            "model": "Model",
+            "horizon": "Horizon",
+            "split": "Split",
+            "rmse": "RMSE",
+            "mae": "MAE",
+            "r2": "R²",
+            "beats_persistence_validation": "Beat Persistence",
+        }
+    )
+    display["Model"] = display["Model"].map(_display_model_name)
+    display["Horizon"] = display["Horizon"].map(_display_horizon)
+    display["Split"] = display["Split"].map(lambda value: str(value).title())
+    display["Beat Persistence"] = display["Beat Persistence"].map(lambda value: "Yes" if _as_bool(value) else "No")
+    for column in ("RMSE", "MAE", "R²"):
+        display[column] = display[column].round(3)
+    return display[["Model", "Horizon", "Split", "RMSE", "MAE", "R²", "Beat Persistence"]]
+
+
+def _display_model_name(value: str) -> str:
+    """Convert internal model IDs into dashboard labels."""
+
+    names = {
+        "persistence": "Persistence",
+        "ridge": "Ridge",
+        "random_forest": "Random Forest",
+        "gradient_boosting": "Gradient Boosting",
+        "neural_mlp": "Neural MLP",
+        "pytorch_mlp": "PyTorch MLP",
+    }
+    return names.get(str(value), str(value).replace("_", " ").title())
+
+
+def _display_horizon(value: str) -> str:
+    """Convert horizon IDs into dashboard labels."""
+
+    names = {"day1": "Day 1", "day2": "Day 2", "day3": "Day 3"}
+    return names.get(str(value), str(value).replace("_", " ").title())
+
+
+def _load_json(path: Path) -> dict:
+    """Load a JSON report if present."""
+
+    if not path.exists():
+        return {}
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _format_optional_number(value: object) -> str:
+    """Format a metric value for dashboard cards."""
+
+    if value is None:
+        return "n/a"
+    return f"{float(value):.1f}"
+
+
+def _as_bool(value: object) -> bool:
+    """Coerce CSV/string boolean values for display only."""
+
+    if isinstance(value, str):
+        return value.strip().lower() in {"true", "1", "yes"}
+    return bool(value)
 
 
 if __name__ == "__main__":

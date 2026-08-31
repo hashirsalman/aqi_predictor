@@ -176,7 +176,7 @@ The dashboard calls the FastAPI `/predict` endpoint using `FASTAPI_BASE_URL` fro
 http://127.0.0.1:8000
 ```
 
-The dashboard shows current observed US AQI, pollutant/weather context, source-observation freshness, Day +1/Day +2/Day +3 predicted US AQI, AQI category/alert messages, a forecast chart, and health guidance. It also includes EDA, model-comparison, and SHAP explainability tabs. Model registry names/versions, validation metrics, backend URL, and the raw API response are available in the evaluator-focused technical details tab.
+The dashboard shows current observed US AQI, pollutant/weather context, source-observation freshness, Day +1/Day +2/Day +3 predicted US AQI, AQI category/alert messages, a forecast chart, and health guidance. It also includes clean EDA, model-comparison, and SHAP explainability tabs for users/evaluators. Internal phase notes, local file paths, raw report markdown, and script instructions are intentionally not rendered in the public dashboard tabs. Model registry names/versions, validation metrics, backend URL, and the raw API response are available only in the evaluator-focused technical details tab.
 
 ## Deployment Preparation
 
